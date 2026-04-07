@@ -1,11 +1,37 @@
-<script setup></script>
-
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div class="AppLayout">
+    <Header />
+
+    <div class="AppBody">
+      <Sidebar />
+
+      <main class="MainContent">
+        <router-view />
+      </main>
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<script setup>
+import Header from "@/components/Header.vue";
+import Sidebar from "@/components/Sidebar.vue";
+</script>
+
+<style scoped>
+.AppLayout {
+  min-height: 100vh;
+  background-color: #f5f7fb;
+  color: #222222;
+}
+
+.AppBody {
+  display: flex;
+  min-height: calc(100vh - 64px);
+}
+
+.MainContent {
+  flex: 1;
+  padding: 24px;
+  overflow-x: hidden;
+}
+</style>
