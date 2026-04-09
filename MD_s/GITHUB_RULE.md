@@ -9,7 +9,7 @@
 
 - main → 최종 제출용 (직접 작업 금지)
 - dev → 통합 개발 브랜치
-- feature/\* → 기능별 작업 브랜치 (PM, 팀원 모두 사용)
+- 팀원 개별 브랜치 → 팀원 별 작업 브랜치 (PM, 팀원 모두 사용)
 
 ---
 
@@ -17,7 +17,7 @@
 
 - 모든 작업은 dev를 기준으로 시작한다
 - main에는 직접 push 금지
-- 작업은 feature/\* 브랜치에서 진행 후 dev에 반영한다
+- 작업은 팀원 개별 브랜치에서 진행 후 dev에 반영한다
 - PM은 공용 구조의 뼈대를 먼저 만든다
 - 팀원은 자기 담당 기능(Task) 범위 안에서 작업한다
 
@@ -66,12 +66,12 @@ git pull origin dev
 
 git checkout dev
 git pull origin dev
-git checkout -b feature/기능명
+git checkout -b (팀원 개별 브랜치)
 git add .
 git commit -m "feat: 기능 설명"
-git push origin feature/기능명
+git push origin (팀원 개별 브랜치)
 
-작업 완료 후 PM이 feature/\* → dev 로 merge 한다.
+작업 완료 후 PM이 (팀원 개별 브렌치) → dev 로 merge 한다.
 
 ---
 
@@ -108,7 +108,7 @@ git push origin feature/기능명
 - 공용 파일은 자유 수정 금지
 - PM이 먼저 파일 구조와 담당 구역을 나눈다
 - 팀원은 자기 담당 Task 구역만 수정 가능하다
-- 공용 파일 수정 시 반드시 feature 브랜치에서 작업한다
+- 공용 파일 수정 시 반드시 팀원 개별 브랜치에서 작업한다
 
 ---
 
