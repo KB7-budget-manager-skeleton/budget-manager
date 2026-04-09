@@ -8,6 +8,8 @@
       <router-link to="/">대시보드</router-link>
       <router-link to="/record">거래 등록</router-link>
       <router-link to="/transactions">거래 내역</router-link>
+      <!-- 추가 기능: 예산관리 페이지(담당:수현) -->
+      <router-link to="/budget">예산 관리</router-link>
     </div>
   </header>
 </template>
