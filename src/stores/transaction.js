@@ -19,7 +19,8 @@ export const useTransactionStore = defineStore('transaction', () => {
   const FetchTransactions = async () => {
     try {
       // TODO: [2-1] 거래 목록 조회 기능 구현
-      // axios.get(BaseUri) 사용
+      const res = await axios.get('http://localhost:3000/transactions');
+      State.Transactions = res.data;
     } catch (Error) {
       console.error(Error);
     }
@@ -83,10 +84,11 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     const Today = new Date();
 
+    //전체목록일때
     if (State.SelectedPeriod === 'all') {
       return State.Transactions;
     }
-
+    //주간목록
     if (State.SelectedPeriod === 'week') {
       const Day = Today.getDay();
 
@@ -104,6 +106,7 @@ export const useTransactionStore = defineStore('transaction', () => {
       });
     }
 
+    //월별 목록
     if (State.SelectedPeriod === 'month') {
       const Start = new Date(Today.getFullYear(), Today.getMonth(), 1);
       const End = new Date(Today.getFullYear(), Today.getMonth() + 1, 0);

@@ -14,6 +14,25 @@
       <button class="btn btn-outline-secondary" @click="resetFilter">
         전체
       </button>
+      <hr />
+    </div>
+    <!-- 카테고리 필터 -->
+    <div class="mb-3">
+      <button class="btn btn-outline-dark me-2" @click="setCategory('all')">
+        전체 카테고리
+      </button>
+      <button class="btn btn-outline-danger me-2" @click="setCategory('식비')">
+        식비
+      </button>
+      <button class="btn btn-outline-warning me-2" @click="setCategory('교통')">
+        교통
+      </button>
+      <button class="btn btn-outline-info me-2" @click="setCategory('쇼핑')">
+        쇼핑
+      </button>
+      <button class="btn btn-outline-success me-2" @click="setCategory('월급')">
+        월급
+      </button>
     </div>
     <!-- 들어가는 내용  -->
     <table class="table table-striped table-hover text-center">
@@ -44,18 +63,20 @@
     </table>
   </div>
 </template>
-
 <script setup>
 import { computed, onMounted } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 
 const store = useTransactionStore();
+
+// store → 화면 연결
+
 const transactions = computed(() => store.FilterTransactionsByPeriod());
 
+// 컴포넌트 실행 시 데이터 가져오기
 onMounted(() => {
   store.FetchTransactions();
 });
-
 const setWeek = () => {
   store.SetSelectedPeriod('week');
 };
