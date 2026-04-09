@@ -1,18 +1,18 @@
-import { reactive } from "vue";
-import { defineStore } from "pinia";
-import axios from "axios";
+import { reactive } from 'vue';
+import { defineStore } from 'pinia';
+import axios from 'axios';
 
-export const useTransactionStore = defineStore("transaction", () => {
-  const BaseUri = "/api/transactions";
+export const useTransactionStore = defineStore('transaction', () => {
+  const BaseUri = '/api/transactions';
 
   // [5-1] 공용 거래 데이터 상태 정의
   const State = reactive({
     Transactions: [],
-    SelectedPeriod: "all",
-    SelectedCategory: "all",
+    SelectedPeriod: 'all',
+    SelectedCategory: 'all',
     IsLoading: false,
     IsError: false,
-    ErrorMessage: "",
+    ErrorMessage: '',
   });
 
   // [2-1] 거래 목록 조회용 기본 API 함수
@@ -77,7 +77,46 @@ export const useTransactionStore = defineStore("transaction", () => {
 
   // [2-4] 기간 조건에 맞는 거래 필터링
   const FilterTransactionsByPeriod = () => {
-    // TODO: [2-4] 기간 필터 로직 구현
+    const FormatDate = (DateValue) => {
+      return new Date(DateValue).toISOString().split('T')[0];
+    };
+
+    const Today = new Date();
+
+    if (State.SelectedPeriod === 'all') {
+      return State.Transactions;
+    }
+
+    if (State.SelectedPeriod === 'week') {
+      const Day = Today.getDay();
+
+      const Start = new Date(Today);
+      Start.setDate(Today.getDate() - Day);
+
+      const End = new Date(Start);
+      End.setDate(Start.getDate() + 6);
+
+      const StartDate = FormatDate(Start);
+      const EndDate = FormatDate(End);
+
+      return State.Transactions.filter((Item) => {
+        return Item.date >= StartDate && Item.date <= EndDate;
+      });
+    }
+
+    if (State.SelectedPeriod === 'month') {
+      const Start = new Date(Today.getFullYear(), Today.getMonth(), 1);
+      const End = new Date(Today.getFullYear(), Today.getMonth() + 1, 0);
+
+      const StartDate = FormatDate(Start);
+      const EndDate = FormatDate(End);
+
+      return State.Transactions.filter((Item) => {
+        return Item.date >= StartDate && Item.date <= EndDate;
+      });
+    }
+
+    return State.Transactions;
   };
 
   // [2-4] 카테고리 조건에 맞는 거래 필터링
