@@ -5,7 +5,7 @@ import axios from "axios";
 export const useTransactionStore = defineStore("transaction", () => {
   const BaseUri = "/api/transactions";
 
-  // [5-1] 공용 거래 데이터 상태 정의
+  // 공용 거래 데이터 상태 정의
   const State = reactive({
     Transactions: [],
     SelectedPeriod: "all",
