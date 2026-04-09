@@ -79,6 +79,86 @@
       "category": "교통비",
       "amount": 1450,
       "memo": "지하철"
+    },
+    {
+      "id": "11",
+      "date": "2025-04-05",
+      "type": "income",
+      "category": "월급",
+      "amount": 2500000,
+      "memo": "작년 급여"
+    },
+    {
+      "id": "12",
+      "date": "2025-04-10",
+      "type": "expense",
+      "category": "식비",
+      "amount": 15000,
+      "memo": "점심"
+    },
+    {
+      "id": "13",
+      "date": "2026-01-15",
+      "type": "expense",
+      "category": "쇼핑",
+      "amount": 80000,
+      "memo": "겨울 옷 구매"
+    },
+    {
+      "id": "14",
+      "date": "2026-01-20",
+      "type": "income",
+      "category": "보너스",
+      "amount": 300000,
+      "memo": "성과급"
+    },
+    {
+      "id": "15",
+      "date": "2026-03-01",
+      "type": "expense",
+      "category": "교통비",
+      "amount": 50000,
+      "memo": "정기권"
+    },
+    {
+      "id": "16",
+      "date": "2026-03-10",
+      "type": "expense",
+      "category": "카페",
+      "amount": 6000,
+      "memo": "라떼"
+    },
+    {
+      "id": "17",
+      "date": "2026-03-25",
+      "type": "income",
+      "category": "용돈",
+      "amount": 100000,
+      "memo": "가족 지원"
+    },
+    {
+      "id": "18",
+      "date": "2026-03-30",
+      "type": "expense",
+      "category": "식비",
+      "amount": 13000,
+      "memo": "외식"
+    },
+    {
+      "id": "19",
+      "date": "2026-03-28",
+      "type": "expense",
+      "category": "문화",
+      "amount": 20000,
+      "memo": "공연"
+    },
+    {
+      "id": "20",
+      "date": "2026-03-27",
+      "type": "expense",
+      "category": "교통비",
+      "amount": 3000,
+      "memo": "버스"
     }
   ]
 }
