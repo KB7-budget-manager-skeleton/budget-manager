@@ -14,7 +14,8 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:3000",
         changeOrigin: true,
-        rewrite: (Path) => Path.replace(/^\/api/, ""),
+        // /api로 시작하는 요청을 json-server 경로로 전달
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },
