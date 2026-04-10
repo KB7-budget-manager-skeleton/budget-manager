@@ -34,7 +34,7 @@
           </div>
 
           <div class="info-text total-text">
-            총 예산 {{ DummyTotalBudget.toLocaleString() }}원
+            총 예산 {{ TotalBudget.toLocaleString() }}원
           </div>
         </section>
 
@@ -42,7 +42,7 @@
           <article class="summary-card">
             <p class="summary-label">이번달 이만큼을 사용했어요</p>
             <p class="summary-value">
-              {{ DummyCurrentMonthSpend.toLocaleString() }}원
+              {{ CurrentMonthSpend.toLocaleString() }}원
             </p>
           </article>
 
@@ -70,18 +70,21 @@
           <form @submit.prevent="SaveBudget" class="modal-form">
             <div class="input-group">
               <label for="budget">예산</label>
-              <input
-                type="text"
-                id="budget"
-                ref="BudgetInputRef"
-                placeholder="0원"
-                :value="FormattedInput"
-                @input="HandleInput"
-                autocomplete="off"
-                inputmode="numeric"
-                @keydown="PreventText"
-                class="budget-input"
-              />
+              <div class="budget-input-wrapper">
+                <input
+                  type="text"
+                  id="budget"
+                  ref="BudgetInputRef"
+                  placeholder="0"
+                  :value="FormattedInput"
+                  @input="HandleInput"
+                  autocomplete="off"
+                  inputmode="numeric"
+                  @keydown="PreventText"
+                  class="budget-input"
+                />
+                <span class="unit-text">원</span>
+              </div>
               <p v-if="isShowError" class="error-text">
                 예산을 올바르게 입력해주세요.
               </p>
@@ -93,18 +96,20 @@
               <div class="readonly-row">
                 <p>지난달 지출</p>
                 <p class="readonly-value">
-                  {{ DummyLastMonthSpend.toLocaleString() }}원
+                  {{ LastMonthSpend.toLocaleString() }}원
                 </p>
               </div>
               <div class="readonly-row">
                 <p>이번달 지출</p>
                 <p class="readonly-value">
-                  {{ DummyCurrentMonthSpend.toLocaleString() }}원
+                  {{ CurrentMonthSpend.toLocaleString() }}원
                 </p>
               </div>
               <div class="readonly-row">
                 <p>권장 예산</p>
-                <p class="readonly-value">000,000원</p>
+                <p class="readonly-value">
+                  {{ RecommendedAmount.toLocaleString() }}원
+                </p>
               </div>
             </div>
 
@@ -123,27 +128,66 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
+import axios from 'axios';
+import { useTransactionStore } from '@/stores/transaction';
 
-// 임의의 더미데이터 설정
-const DummyTotalBudget = ref(0); // 총 예산 (초기값 0)
-const DummyLastMonthSpend = ref(950000); // 지난달 지출
-const DummyCurrentMonthSpend = ref(420000); // 이번달 지출
+const transactionStore = useTransactionStore();
+
+// 실제 데이터 상태 변수
+const TotalBudget = ref(0);
+
+// 날짜 설정
+const TodayDate = new Date();
+const getYearMonthStr = (year, month) =>
+  `${year}-${String(month).padStart(2, '0')}`;
+
+const currentYearMonth = getYearMonthStr(
+  TodayDate.getFullYear(),
+  TodayDate.getMonth() + 1,
+);
+const lastMonthDateObj = new Date(
+  TodayDate.getFullYear(),
+  TodayDate.getMonth() - 1,
+  1,
+);
+const lastYearMonth = getYearMonthStr(
+  lastMonthDateObj.getFullYear(),
+  lastMonthDateObj.getMonth() + 1,
+);
+
+// 이번달 지출액
+const CurrentMonthSpend = computed(() => {
+  return transactionStore.State.Transactions.filter(
+    (item) => item.type === 'expense' && item.date.startsWith(currentYearMonth),
+  ).reduce((sum, item) => sum + item.amount, 0);
+});
+
+// 지난달 지출액
+const LastMonthSpend = computed(() => {
+  return transactionStore.State.Transactions.filter(
+    (item) => item.type === 'expense' && item.date.startsWith(lastYearMonth),
+  ).reduce((sum, item) => sum + item.amount, 0);
+});
+
+// 권장 예산: 지난달 지출액의 90%
+const RecommendedAmount = computed(() => {
+  return Math.floor((LastMonthSpend.value * 0.9) / 10) * 10;
+});
 
 // 그 외 변수
-const isBudgetSet = ref(false); // 예산이 설정되었는지 여부
-const isModalOpen = ref(false); // 모달창 열림/닫힘
-const CurrentMonth = ref(new Date().getMonth() + 1); // 현재 월
+const isBudgetSet = ref(false);
+const isModalOpen = ref(false);
+const CurrentMonth = ref(new Date().getMonth() + 1);
 
-const InputAmount = ref(0); // 사용자가 입력하는 숫자
-const isShowError = ref(false); // 에러 메시지 표시 여부
+const InputAmount = ref(0);
+const isShowError = ref(false);
 
-// 모달 인풋에 포커스를 주기 위한 참조 변수
+// 모달 인풋 참조
 const BudgetInputRef = ref(null);
 
 // Computed - 남은 예산
 const RemainingBudget = computed(() => {
-  return DummyTotalBudget.value - DummyCurrentMonthSpend.value;
-  // 남은 예산 = 총 예산 - 이번달 지출
+  return TotalBudget.value - CurrentMonthSpend.value;
 });
 
 // Computed - 하루 권장 지출액
@@ -155,99 +199,92 @@ const DailyAllowance = computed(() => {
     0,
   ).getDate();
   const RemainingDays = LastDay - Today.getDate() + 1;
-
   if (RemainingDays <= 0 || RemainingBudget.value <= 0) return 0;
-
   return Math.floor(RemainingBudget.value / RemainingDays);
 });
 
 // 오늘까지 권장 지출액
 const RecommendedSpendToDate = computed(() => {
-  if (DummyTotalBudget.value === 0) return 0;
-
+  if (TotalBudget.value === 0) return 0;
   const Today = new Date();
-  const CurrentDay = Today.getDate(); // 오늘 날짜
+  const CurrentDay = Today.getDate();
   const LastDay = new Date(
     Today.getFullYear(),
     Today.getMonth() + 1,
     0,
-  ).getDate(); // 이번 달의 마지막 날짜
-
-  // (총 예산 / 이번 달 총 일수) * 오늘 날짜
-  const IdealDailySpend = DummyTotalBudget.value / LastDay;
+  ).getDate();
+  const IdealDailySpend = TotalBudget.value / LastDay;
   return Math.floor(IdealDailySpend * CurrentDay);
 });
 
-// 모달창 인풋에 보여질 텍스트
+// 입력창 포맷팅
 const FormattedInput = computed(() => {
   if (InputAmount.value === 0) return '';
-  return InputAmount.value.toLocaleString() + '원';
+  return InputAmount.value.toLocaleString();
 });
 
-// 막대그래프 진행률 계산
+// 진행률 계산
 const ProgressPercent = computed(() => {
-  if (DummyTotalBudget.value === 0) return 0;
-  // 지출 비율 계산 (최대 100%를 넘지 않도록 처리)
-  const Ratio = (DummyCurrentMonthSpend.value / DummyTotalBudget.value) * 100;
+  if (TotalBudget.value === 0) return 0;
+  const Ratio = (CurrentMonthSpend.value / TotalBudget.value) * 100;
   return Math.min(Ratio, 100);
 });
 
-// 하얀 선의 위치(퍼센트) 계산
+// 그래프의 하얀 선 위치
 const RecommendedPercent = computed(() => {
-  if (DummyTotalBudget.value === 0) return 0;
-  const Ratio = (RecommendedSpendToDate.value / DummyTotalBudget.value) * 100;
+  if (TotalBudget.value === 0) return 0;
+  const Ratio = (RecommendedSpendToDate.value / TotalBudget.value) * 100;
   return Math.min(Ratio, 100);
 });
 
-// 화면 켜질 때 실행: 예산이 0원이면 바로 모달 열기
 onMounted(async () => {
-  if (DummyTotalBudget.value === 0) {
-    isModalOpen.value = true;
+  await transactionStore.FetchTransactions();
+  try {
+    const res = await axios.get('http://localhost:3000/budget/main');
+    TotalBudget.value = res.data.amount || 0;
+  } catch (error) {
+    console.warn('예산 데이터가 없습니다.');
+    TotalBudget.value = 0;
+  }
 
-    // 모달 인풋창에 포커스
+  if (TotalBudget.value === 0) {
+    isModalOpen.value = true;
     await nextTick();
-    if (BudgetInputRef.value) {
-      BudgetInputRef.value.focus();
-    }
+    if (BudgetInputRef.value) BudgetInputRef.value.focus();
   } else {
     isBudgetSet.value = true;
   }
 });
 
-// ESC 모달 닫기
 onMounted(() => {
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') CloseModal();
+    if (e.key === 'Escape' && isModalOpen.value) CloseModal();
   });
 });
 
-// 입력창에 숫자 칠 때 실행: 숫자만 남기고, 콤마 찍을 준비
 const HandleInput = (event) => {
   const RawValue = event.target.value.replace(/[^0-9]/g, '');
   InputAmount.value = RawValue === '' ? 0 : Number(RawValue);
 };
 
-// 수정하러 가기 버튼 누르면 모달창 열기
 const OpenModal = async () => {
-  InputAmount.value = DummyTotalBudget.value; // 기존 예산을 입력창에 채워줌
+  InputAmount.value = TotalBudget.value;
   isShowError.value = false;
   isModalOpen.value = true;
-
-  // 모달이 열리고 인풋창에 포커스
   await nextTick();
-  if (BudgetInputRef.value) {
-    BudgetInputRef.value.focus();
-  }
+  if (BudgetInputRef.value) BudgetInputRef.value.focus();
 };
 
-// 모달창 닫기 (X 버튼, 취소 버튼)
 const CloseModal = () => {
+  if (TotalBudget.value === 0) {
+    isShowError.value = true;
+    return;
+  }
   isModalOpen.value = false;
+  isShowError.value = false;
 };
 
-// 숫자 외의 다른 키를 입력 방지하는 함수
 const PreventText = (event) => {
-  // 허용키 설정
   const AllowedKeys = [
     'Backspace',
     'Tab',
@@ -257,39 +294,51 @@ const PreventText = (event) => {
     'Delete',
   ];
   if (AllowedKeys.includes(event.key)) return;
-
   if (
     (event.ctrlKey || event.metaKey) &&
     ['a', 'c', 'v'].includes(event.key.toLowerCase())
   )
     return;
-
-  if (!/^[0-9]$/.test(event.key)) {
-    event.preventDefault();
-  }
+  if (!/^[0-9]$/.test(event.key)) event.preventDefault();
 };
 
 // 5. 저장하기 버튼 눌렀을 때
-const SaveBudget = () => {
-  // 예산을 안 적었으면 에러 띄우기(숫자만 입력 가능)
-  if (
-    !InputAmount.value ||
-    InputAmount.value <= 0 ||
-    isNaN(InputAmount.value)
-  ) {
+const SaveBudget = async () => {
+  if (!InputAmount.value || InputAmount.value <= 0) {
     isShowError.value = true;
     return;
   }
 
-  isShowError.value = false;
-  DummyTotalBudget.value = InputAmount.value; // 더미 변수에 저장
-  isBudgetSet.value = true; // 대시보드 화면 켜기
-  isModalOpen.value = false; // 모달 닫기
+  try {
+    await axios.put('http://localhost:3000/budget/main', {
+      id: 'main',
+      amount: InputAmount.value,
+    });
+
+    TotalBudget.value = InputAmount.value;
+    isShowError.value = false;
+    isBudgetSet.value = true;
+    isModalOpen.value = false;
+  } catch (error) {
+    console.error('저장 실패:', error);
+    try {
+      await axios.post('http://localhost:3000/budget', {
+        id: 'main',
+        amount: InputAmount.value,
+      });
+      TotalBudget.value = InputAmount.value;
+      isShowError.value = false;
+      isBudgetSet.value = true;
+      isModalOpen.value = false;
+    } catch (postError) {
+      alert('데이터 저장 중 오류가 발생했습니다.');
+    }
+  }
 };
 </script>
 
 <style scoped>
-/* 전역 레이아웃 (오른쪽 메인 대시보드 완벽 일치) */
+/* 전역 레이아웃 */
 .app-container {
   width: 100%;
   min-height: calc(100vh - 60px);
@@ -390,7 +439,7 @@ const SaveBudget = () => {
   text-align: right;
 }
 
-/* 카드 영역 (오른쪽 대시보드 카드 완벽 재현) */
+/* 카드 영역 */
 .summary-section {
   display: flex;
   gap: 20px;
@@ -454,7 +503,7 @@ const SaveBudget = () => {
   z-index: 1000;
 }
 .modal-content {
-  background-color: #212123; /* 모달도 전체 톤에 맞춤 */
+  background-color: #212123;
   color: #ffffff;
   padding: 40px 30px;
   border-radius: 16px;
@@ -476,11 +525,6 @@ const SaveBudget = () => {
 .modal-header {
   margin-bottom: 24px;
 }
-.modal-header h5 {
-  color: #aaaaaa;
-  margin: 0 0 5px 0;
-  font-size: 1rem;
-}
 .modal-header h2 {
   margin: 0;
   font-size: 1.6rem;
@@ -497,22 +541,35 @@ const SaveBudget = () => {
   color: #aaaaaa;
   margin-bottom: 10px;
 }
+.budget-input-wrapper {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  border-bottom: 2px solid #555555;
+  transition: border-color 0.2s;
+  padding-bottom: 8px;
+}
+.budget-input-wrapper:focus-within {
+  border-bottom-color: #635bff;
+}
 .budget-input {
-  width: 100%;
-  padding: 12px 0;
+  width: auto;
+  min-width: 80px;
   font-size: 1.8rem;
   font-weight: bold;
   background-color: transparent;
   color: #ffffff;
   border: none;
-  border-bottom: 2px solid #555555;
-  text-align: center;
+  text-align: right;
   outline: none;
-  transition: border-color 0.2s;
 }
-.budget-input:focus {
-  border-bottom-color: #635bff;
+.unit-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin-left: 4px;
 }
+
 .error-text {
   color: #ff4d4f;
   font-size: 0.9rem;

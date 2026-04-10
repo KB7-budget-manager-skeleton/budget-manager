@@ -180,5 +180,9 @@
       "memo": "버스",
       "location": "시내버스"
     }
-  ]
+  ],
+  "budget": {
+    "id": "main",
+    "amount": 500000
+  }
 }
