@@ -36,11 +36,18 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [1-4] 거래 등록용 기본 API 함수
   const CreateTransaction = async (TransactionData) => {
+    State.IsLoading = true;
     try {
-      // TODO: [1-4] 거래 등록 기능 구현
-      // axios.post(BaseUri, TransactionData) 사용
+      const Response = await axios.post(BaseUri, TransactionData);
+      State.Transactions.push(Response.data);
+      State.IsError = false;
+      State.ErrorMessage = '';
     } catch (Error) {
+      State.IsError = true;
+      State.ErrorMessage = Error.message;
       console.error(Error);
+    } finally {
+      State.IsLoading = false;
     }
   };
 
