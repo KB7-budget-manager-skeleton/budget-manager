@@ -11,29 +11,25 @@
       <button class="btn btn-outline-success me-2" @click="setMonth">
         이번 달
       </button>
-      <button class="btn btn-outline-secondary" @click="resetFilter">
-        전체
-      </button>
+
       <hr />
     </div>
-    <!-- 카테고리 필터 -->
+
+    <!-- 카테고리 드롭다운 -->
     <div class="mb-3">
-      <button class="btn btn-outline-dark me-2" @click="setCategory('all')">
-        전체 카테고리
-      </button>
-      <button class="btn btn-outline-danger me-2" @click="setCategory('식비')">
-        식비
-      </button>
-      <button class="btn btn-outline-warning me-2" @click="setCategory('교통')">
-        교통
-      </button>
-      <button class="btn btn-outline-info me-2" @click="setCategory('쇼핑')">
-        쇼핑
-      </button>
-      <button class="btn btn-outline-success me-2" @click="setCategory('월급')">
-        월급
-      </button>
+      <select
+        class="form-select"
+        :value="store.State.SelectedCategory"
+        @change="store.SetSelectedCategory($event.target.value)"
+      >
+        <option value="all">전체</option>
+        <option value="식비">식비</option>
+        <option value="교통">교통</option>
+        <option value="쇼핑">쇼핑</option>
+        <option value="문화">문화</option>
+      </select>
     </div>
+
     <!-- 들어가는 내용  -->
     <table class="table table-striped table-hover text-center">
       <thead class="table-primary">
@@ -77,6 +73,8 @@ const transactions = computed(() => store.FilterTransactionsByPeriod());
 onMounted(() => {
   store.FetchTransactions();
 });
+
+//기간별 핉터
 const setWeek = () => {
   store.SetSelectedPeriod('week');
 };
@@ -85,7 +83,5 @@ const setMonth = () => {
   store.SetSelectedPeriod('month');
 };
 
-const resetFilter = () => {
-  store.SetSelectedPeriod('all');
-};
+//카테고리별 필터
 </script>

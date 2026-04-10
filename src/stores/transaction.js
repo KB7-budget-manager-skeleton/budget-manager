@@ -17,12 +17,20 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [2-1] 거래 목록 조회용 기본 API 함수
   const FetchTransactions = async () => {
+    State.IsLoading = true;
+    State.IsError = false;
+    State.ErrorMessage = '';
     try {
       // TODO: [2-1] 거래 목록 조회 기능 구현
       const res = await axios.get('http://localhost:3000/transactions');
+      //데이터 저장 꼭 필수
       State.Transactions = res.data;
     } catch (Error) {
+      State.IsError = true;
+      State.ErrorMessage = '거래 내역을 불러오지 못했습니다.';
       console.error(Error);
+    } finally {
+      State.IsLoading = false;
     }
   };
 
@@ -123,8 +131,15 @@ export const useTransactionStore = defineStore('transaction', () => {
   };
 
   // [2-4] 카테고리 조건에 맞는 거래 필터링
+  // TODO: [2-4] 카테고리 필터 로직 구현
   const FilterTransactionsByCategory = () => {
-    // TODO: [2-4] 카테고리 필터 로직 구현
+    //전체 선택이면 전체 데이터 반환
+    if (State.SelectedCategory === 'all') {
+      return State.Transactions;
+    }
+    return State.Transactions.filter((item) => {
+      return item.category === State.SelectedCategory;
+    });
   };
 
   // [3-2] 월별 수입/지출/순이익 계산
