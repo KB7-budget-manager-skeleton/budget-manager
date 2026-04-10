@@ -128,7 +128,6 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
-import axios from 'axios';
 import { useTransactionStore } from '@/stores/transaction';
 
 const TransactionStore = useTransactionStore();
@@ -158,14 +157,14 @@ const LastYearMonth = getYearMonthStr(
 // 이번달 지출액
 const CurrentMonthSpend = computed(() => {
   return TransactionStore.State.Transactions.filter(
-    (item) => item.type === 'Expense' && item.date.startsWith(CurrentYearMonth),
+    (item) => item.type === 'expense' && item.date.startsWith(CurrentYearMonth),
   ).reduce((sum, item) => sum + item.amount, 0);
 });
 
 // 지난달 지출액
 const LastMonthSpend = computed(() => {
   return TransactionStore.State.Transactions.filter(
-    (item) => item.type === 'Expense' && item.date.startsWith(LastYearMonth),
+    (item) => item.type === 'expense' && item.date.startsWith(LastYearMonth),
   ).reduce((sum, item) => sum + item.amount, 0);
 });
 
@@ -203,7 +202,7 @@ const DailyAllowance = computed(() => {
   return Math.floor(RemainingBudget.value / RemainingDays);
 });
 
-// 오늘까지 권장 지출액
+// computed - 오늘까지 권장 지출액
 const RecommendedSpendToDate = computed(() => {
   if (TotalBudget.value === 0) return 0;
   const Today = new Date();
@@ -239,11 +238,12 @@ const RecommendedPercent = computed(() => {
 
 onMounted(async () => {
   await TransactionStore.FetchTransactions();
-  try {
-    const res = await axios.get('http://localhost:3000/budget');
-    TotalBudget.value = res.data.amount || 0;
-  } catch (error) {
-    console.warn('예산 데이터가 없습니다.');
+
+  // localStorage에서 데이터 가져오기
+  const SavedBudget = localStorage.getItem('userBudget');
+  if (SavedBudget) {
+    TotalBudget.value = Number(SavedBudget);
+  } else {
     TotalBudget.value = 0;
   }
 
@@ -303,17 +303,15 @@ const PreventText = (event) => {
 };
 
 // 저장하기 버튼 눌렀을 때
-const SaveBudget = async () => {
+const SaveBudget = () => {
   if (!InputAmount.value || InputAmount.value <= 0) {
     isShowError.value = true;
     return;
   }
 
   try {
-    await axios.put('http://localhost:3000/budget', {
-      id: 'main',
-      amount: InputAmount.value,
-    });
+    // localStorage에 저장
+    localStorage.setItem('userBudget', String(InputAmount.value));
 
     TotalBudget.value = InputAmount.value;
     isShowError.value = false;
@@ -321,18 +319,7 @@ const SaveBudget = async () => {
     isModalOpen.value = false;
   } catch (error) {
     console.error('저장 실패:', error);
-    try {
-      await axios.post('http://localhost:3000/budget', {
-        id: 'main',
-        amount: InputAmount.value,
-      });
-      TotalBudget.value = InputAmount.value;
-      isShowError.value = false;
-      isBudgetSet.value = true;
-      isModalOpen.value = false;
-    } catch (postError) {
-      alert('데이터 저장 중 오류가 발생했습니다.');
-    }
+    alert('데이터 저장 중 오류가 발생했습니다.');
   }
 };
 </script>
