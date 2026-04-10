@@ -131,7 +131,7 @@ import { ref, computed, onMounted, nextTick } from 'vue';
 import axios from 'axios';
 import { useTransactionStore } from '@/stores/transaction';
 
-const transactionStore = useTransactionStore();
+const TransactionStore = useTransactionStore();
 
 // 실제 데이터 상태 변수
 const TotalBudget = ref(0);
@@ -141,31 +141,31 @@ const TodayDate = new Date();
 const getYearMonthStr = (year, month) =>
   `${year}-${String(month).padStart(2, '0')}`;
 
-const currentYearMonth = getYearMonthStr(
+const CurrentYearMonth = getYearMonthStr(
   TodayDate.getFullYear(),
   TodayDate.getMonth() + 1,
 );
-const lastMonthDateObj = new Date(
+const LastMonthDateObj = new Date(
   TodayDate.getFullYear(),
   TodayDate.getMonth() - 1,
   1,
 );
-const lastYearMonth = getYearMonthStr(
-  lastMonthDateObj.getFullYear(),
-  lastMonthDateObj.getMonth() + 1,
+const LastYearMonth = getYearMonthStr(
+  LastMonthDateObj.getFullYear(),
+  LastMonthDateObj.getMonth() + 1,
 );
 
 // 이번달 지출액
 const CurrentMonthSpend = computed(() => {
-  return transactionStore.State.Transactions.filter(
-    (item) => item.type === 'expense' && item.date.startsWith(currentYearMonth),
+  return TransactionStore.State.Transactions.filter(
+    (item) => item.type === 'Expense' && item.date.startsWith(CurrentYearMonth),
   ).reduce((sum, item) => sum + item.amount, 0);
 });
 
 // 지난달 지출액
 const LastMonthSpend = computed(() => {
-  return transactionStore.State.Transactions.filter(
-    (item) => item.type === 'expense' && item.date.startsWith(lastYearMonth),
+  return TransactionStore.State.Transactions.filter(
+    (item) => item.type === 'Expense' && item.date.startsWith(LastYearMonth),
   ).reduce((sum, item) => sum + item.amount, 0);
 });
 
@@ -230,7 +230,7 @@ const ProgressPercent = computed(() => {
   return Math.min(Ratio, 100);
 });
 
-// 그래프의 하얀 선 위치
+// 그래프의 흰 선 위치
 const RecommendedPercent = computed(() => {
   if (TotalBudget.value === 0) return 0;
   const Ratio = (RecommendedSpendToDate.value / TotalBudget.value) * 100;
@@ -238,7 +238,7 @@ const RecommendedPercent = computed(() => {
 });
 
 onMounted(async () => {
-  await transactionStore.FetchTransactions();
+  await TransactionStore.FetchTransactions();
   try {
     const res = await axios.get('http://localhost:3000/budget');
     TotalBudget.value = res.data.amount || 0;
@@ -302,7 +302,7 @@ const PreventText = (event) => {
   if (!/^[0-9]$/.test(event.key)) event.preventDefault();
 };
 
-// 5. 저장하기 버튼 눌렀을 때
+// 저장하기 버튼 눌렀을 때
 const SaveBudget = async () => {
   if (!InputAmount.value || InputAmount.value <= 0) {
     isShowError.value = true;
