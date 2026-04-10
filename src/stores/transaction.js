@@ -36,18 +36,11 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [1-4] 거래 등록용 기본 API 함수
   const CreateTransaction = async (TransactionData) => {
-    State.IsLoading = true;
     try {
-      const Response = await axios.post(BaseUri, TransactionData);
-      State.Transactions.push(Response.data);
-      State.IsError = false;
-      State.ErrorMessage = '';
+      // TODO: [1-4] 거래 등록 기능 구현
+      // axios.post(BaseUri, TransactionData) 사용
     } catch (Error) {
-      State.IsError = true;
-      State.ErrorMessage = Error.message;
       console.error(Error);
-    } finally {
-      State.IsLoading = false;
     }
   };
 
@@ -72,12 +65,17 @@ export const useTransactionStore = defineStore('transaction', () => {
   };
 
   // [2-5] 거래 삭제용 기본 API 함수
-  const DeleteTransaction = async (Id) => {
+  const DeleteTransaction = async (id) => {
+    const confirmDelete = window.confirm('정말 삭제하시겠습니까??');
+    if (!confirmDelete) return;
     try {
       // TODO: [2-5] 거래 삭제 기능 구현
-      // axios.delete(`${BaseUri}/${Id}`) 사용
+      await axios.delete(`http://localhost:3000/transactions/${id}`);
+      State.Transactions = State.Transactions.filter((item) => {
+        return item.id !== id;
+      });
     } catch (Error) {
-      console.error(Error);
+      console.error('삭제실패:', Error);
     }
   };
 
@@ -93,10 +91,6 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [2-4] 기간 조건에 맞는 거래 필터링
   const FilterTransactionsByPeriod = () => {
-    const FormatDate = (DateValue) => {
-      return new Date(DateValue).toISOString().split('T')[0];
-    };
-
     const Today = new Date();
 
     if (State.SelectedPeriod === 'all') {
@@ -105,30 +99,30 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     if (State.SelectedPeriod === 'week') {
       const Day = Today.getDay();
-
       const Start = new Date(Today);
+      Start.setHours(0, 0, 0, 0);
       Start.setDate(Today.getDate() - Day);
 
       const End = new Date(Start);
+      End.setHours(23, 59, 59, 999);
       End.setDate(Start.getDate() + 6);
 
-      const StartDate = FormatDate(Start);
-      const EndDate = FormatDate(End);
-
       return State.Transactions.filter((Item) => {
-        return Item.date >= StartDate && Item.date <= EndDate;
+        const ItemDate = new Date(Item.date);
+        return ItemDate >= Start && ItemDate <= End;
       });
     }
 
     if (State.SelectedPeriod === 'month') {
       const Start = new Date(Today.getFullYear(), Today.getMonth(), 1);
-      const End = new Date(Today.getFullYear(), Today.getMonth() + 1, 0);
+      Start.setHours(0, 0, 0, 0);
 
-      const StartDate = FormatDate(Start);
-      const EndDate = FormatDate(End);
+      const End = new Date(Today.getFullYear(), Today.getMonth() + 1, 0);
+      End.setHours(23, 59, 59, 999);
 
       return State.Transactions.filter((Item) => {
-        return Item.date >= StartDate && Item.date <= EndDate;
+        const ItemDate = new Date(Item.date);
+        return ItemDate >= Start && ItemDate <= End;
       });
     }
 

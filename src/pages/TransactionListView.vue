@@ -11,7 +11,7 @@
       <button class="btn btn-outline-success me-2" @click="setMonth">
         이번 달
       </button>
-      <button class="btn btn-outline-success me-2" @click="restFilter">
+      <button class="btn btn-outline-success me-2" @click="resetFilter">
         전체
       </button>
 
@@ -27,7 +27,7 @@
       >
         <option value="all">전체</option>
         <option value="식비">식비</option>
-        <option value="교통">교통</option>
+        <option value="교통비">교통비</option>
         <option value="쇼핑">쇼핑</option>
         <option value="문화">문화</option>
       </select>
@@ -57,7 +57,12 @@
           <!-- 작업(수정/ 삭제 ) 버튼 구현 -->
           <td>
             <button class="btn btn-sm btn-outline-warning me-2">수정</button>
-            <button class="btn btn-sm btn-outline-danger">삭제</button>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              @click="deleteItem(content.id)"
+            >
+              삭제
+            </button>
           </td>
         </tr>
       </tbody>
@@ -69,9 +74,6 @@ import { computed, onMounted } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 
 const store = useTransactionStore();
-
-// store → 화면 연결
-
 const transactions = computed(() => store.FilterTransactionsByCategory);
 
 // 컴포넌트 실행 시 데이터 가져오기
@@ -88,8 +90,13 @@ const setMonth = () => {
   store.SetSelectedPeriod('month');
 };
 
-const restFilter = () => {
+const resetFilter = () => {
   store.SetSelectedPeriod('all');
+  store.SetSelectedCategory('all');
+};
+
+const deleteItem = (id) => {
+  store.DeleteTransaction(id);
 };
 
 //카테고리별 필터
