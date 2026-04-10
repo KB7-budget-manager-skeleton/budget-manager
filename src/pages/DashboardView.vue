@@ -12,19 +12,22 @@
       </div>
 
       <div class="cards-container">
-        <div v-for="(card, index) in SummaryCards" :key="index" class="summary-card">
+        <div
+          v-for="(card, index) in SummaryCards"
+          :key="index"
+          class="summary-card"
+        >
           <h3 class="card-title">{{ card.title }}</h3>
           <div class="card-bottom">
             <p class="card-amount">{{ card.amount.toLocaleString() }}원</p>
-            
+
             <span class="card-compare">
-              지난달보다 
+              지난달보다
               <span :class="card.isIncrease ? 'text-red' : 'text-blue'">
                 {{ card.rate }}%
               </span>
               {{ card.isIncrease ? '늘었어요.' : '줄었어요.' }}
             </span>
-            
           </div>
         </div>
       </div>
@@ -32,8 +35,7 @@
       <div class="button-container">
         <button class="detail-btn" @click="GoToDetails">자세히 보기</button>
       </div>
-
-      </div>
+    </div>
   </div>
 </template>
 
@@ -41,7 +43,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-// 라우터 
+// 라우터
 const router = useRouter();
 
 // 요구 명세의 3-2 데이터 계산이 완료되지 않아 dummy data 삽입
@@ -116,7 +118,7 @@ const GoToDetails = () => {
 }
 
 hr.divider {
-  width: 320px; 
+  width: 320px;
   height: 1px;
   background-color: #3f3f46;
   border: none;
@@ -126,19 +128,19 @@ hr.divider {
 /* ------------------- 요약 카드 영역 ------------------- */
 .cards-container {
   display: flex;
-  gap: 20px; 
-  margin-bottom: 16px; 
+  gap: 20px;
+  margin-bottom: 16px;
 }
 
 .summary-card {
-  flex: 1; 
-  background-color: #363640; 
-  padding: 32px 24px; 
-  border-radius: 16px; 
+  flex: 1;
+  background-color: #363640;
+  padding: 32px 24px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
-  min-height: 140px; 
+  justify-content: space-between;
+  min-height: 140px;
 }
 
 .card-title {
@@ -146,24 +148,24 @@ hr.divider {
   font-weight: 700;
   color: #ffffff;
   margin: 0;
-  text-align: left; 
+  text-align: left;
 }
 
 .card-bottom {
-  margin-top: auto; 
+  margin-top: auto;
 }
 
 .card-amount {
-  font-size: 32px; 
+  font-size: 32px;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 16px 0; 
+  margin: 0 0 16px 0;
   text-align: center; /* ✅ 가운데 정렬로 수정됨 */
 }
 
 .card-compare {
   font-size: 14px;
-  color: #a1a1aa; 
+  color: #a1a1aa;
   text-align: center; /* ✅ 가운데 정렬로 수정됨 */
   display: block;
 }
@@ -185,12 +187,12 @@ hr.divider {
 }
 
 .detail-btn {
-  width: 100%; 
-  background-color: #5b54fa; 
+  width: 100%;
+  background-color: #5b54fa;
   color: #ffffff;
   border: none;
-  border-radius: 12px; 
-  padding: 18px 0; 
+  border-radius: 12px;
+  padding: 18px 0;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -198,6 +200,6 @@ hr.divider {
 }
 
 .detail-btn:hover {
-  background-color: #463ee6; 
+  background-color: #463ee6;
 }
 </style>

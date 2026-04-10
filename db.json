@@ -199,16 +199,6 @@
       "amount": 3000,
       "memo": "버스",
       "location": "시내버스"
-    },
-    {
-      "date": "2024-03-24",
-      "type": "income",
-      "location": "엉덩이",
-      "category": "월급",
-      "item": "개큰엉덩이",
-      "amount": 9809900,
-      "memo": "엉덩이임",
-      "id": "P1XR4bK"
     }
   ]
 }

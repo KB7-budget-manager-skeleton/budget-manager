@@ -12,16 +12,26 @@
     </nav>
 
     <!-- 우측: 햄버거 버튼 (모바일) -->
-    <button class="Hamburger" @click="menuOpen = !menuOpen" aria-label="메뉴 열기">
+    <button
+      class="Hamburger"
+      @click="menuOpen = !menuOpen"
+      aria-label="메뉴 열기"
+    >
       {{ menuOpen ? '✕' : '☰' }}
     </button>
 
     <!-- 모바일 드롭다운 -->
     <nav v-if="menuOpen" class="MobileNav">
       <router-link to="/" @click="menuOpen = false">대시보드</router-link>
-      <router-link to="/record" @click="menuOpen = false">거래 등록</router-link>
-      <router-link to="/transactions" @click="menuOpen = false">거래 내역</router-link>
-      <router-link to="/budget" @click="menuOpen = false">예산 관리</router-link>
+      <router-link to="/record" @click="menuOpen = false"
+        >거래 등록</router-link
+      >
+      <router-link to="/transactions" @click="menuOpen = false"
+        >거래 내역</router-link
+      >
+      <router-link to="/budget" @click="menuOpen = false"
+        >예산 관리</router-link
+      >
     </nav>
   </header>
 </template>
@@ -35,9 +45,9 @@ const menuOpen = ref(false);
 .Header {
   display: flex;
   align-items: center;
-  height: var(--header-height);
-  background-color: var(--color-base);
-  border-bottom: 1px solid var(--color-sub);
+  height: 64px;
+  background-color: #1a1a1b;
+  border-bottom: 1px solid #3d3d4a;
   padding: 0 40px;
   position: relative;
 }
@@ -45,9 +55,9 @@ const menuOpen = ref(false);
 /* 로고 */
 .Logo {
   text-decoration: none;
-  color: var(--color-text);
+  color: #ffffff;
   font-family: 'PyeongchangPeace', sans-serif;
-  font-weight: var(--fw-bold);
+  font-weight: 700;
   font-size: 28px;
 }
 
@@ -63,15 +73,15 @@ const menuOpen = ref(false);
 .NavWrapper a,
 .NavWrapper a:visited {
   text-decoration: none;
-  color: var(--color-text-muted);
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-medium);
+  color: #9193a6;
+  font-size: 16px;
+  font-weight: 500;
   transition: color 0.2s;
 }
 
 .NavWrapper a:hover,
 .NavWrapper a.router-link-active {
-  color: var(--color-main);
+  color: #4659ff;
 }
 
 /* 햄버거 버튼 (기본 숨김) */
@@ -80,7 +90,7 @@ const menuOpen = ref(false);
   margin-left: auto;
   background: none;
   border: none;
-  color: var(--color-text);
+  color: #ffffff;
   font-size: 22px;
   cursor: pointer;
   line-height: 1;
@@ -91,10 +101,10 @@ const menuOpen = ref(false);
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: var(--header-height);
+  top: 64px;
   left: 0;
   width: 100%;
-  background-color: var(--color-sub);
+  background-color: #3d3d4a;
   padding: 16px 24px;
   gap: 16px;
   z-index: 100;
@@ -103,15 +113,15 @@ const menuOpen = ref(false);
 .MobileNav a,
 .MobileNav a:visited {
   text-decoration: none;
-  color: var(--color-text-muted);
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-medium);
+  color: #9193a6;
+  font-size: 16px;
+  font-weight: 500;
   transition: color 0.2s;
 }
 
 .MobileNav a:hover,
 .MobileNav a.router-link-active {
-  color: var(--color-main);
+  color: #4659ff;
 }
 
 /* 반응형 */

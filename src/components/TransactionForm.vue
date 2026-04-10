@@ -243,7 +243,7 @@ const handleCancel = () => {
 .modal-panel {
   position: relative;
   background: #f2f2f5;
-  border-radius: var(--radius-board);
+  border-radius: 16px;
   padding: 36px 40px 32px;
   width: 100%;
   max-width: 560px;
@@ -265,8 +265,8 @@ const handleCancel = () => {
 }
 
 .modal-label {
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-bold);
+  font-size: 16px;
+  font-weight: 700;
   color: #1a1a1b;
   margin: 0 0 6px;
   text-align: center;
@@ -274,8 +274,8 @@ const handleCancel = () => {
 }
 
 .modal-title {
-  font-size: var(--fs-subtitle);
-  font-weight: var(--fw-bold);
+  font-size: 25px;
+  font-weight: 700;
   color: #1a1a1b;
   margin: 0 0 16px;
   text-align: center;
@@ -299,8 +299,8 @@ const handleCancel = () => {
 .field-row label {
   width: 68px;
   flex-shrink: 0;
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-medium);
+  font-size: 16px;
+  font-weight: 500;
   color: #3d3d4a;
 }
 
@@ -311,7 +311,7 @@ const handleCancel = () => {
   border: none;
   border-radius: 20px;
   padding: 10px 18px;
-  font-size: var(--fs-desc);
+  font-size: 16px;
   color: #1a1a1b;
   text-align: center;
   outline: none;
@@ -333,8 +333,8 @@ const handleCancel = () => {
 }
 
 .item-header-label {
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-medium);
+  font-size: 16px;
+  font-weight: 500;
   color: #3d3d4a;
 }
 
@@ -356,9 +356,9 @@ const handleCancel = () => {
 .item-row input {
   background: #ffffff;
   border: none;
-  border-radius: var(--radius-field);
+  border-radius: 8px;
   padding: 10px 12px;
-  font-size: var(--fs-desc);
+  font-size: 16px;
   color: #1a1a1b;
   outline: none;
   width: 100%;
@@ -377,9 +377,9 @@ const handleCancel = () => {
   min-height: 72px;
   background: #ffffff;
   border: none;
-  border-radius: var(--radius-field);
+  border-radius: 8px;
   padding: 10px 12px;
-  font-size: var(--fs-desc);
+  font-size: 16px;
   color: #1a1a1b;
   resize: vertical;
   outline: none;
@@ -391,9 +391,9 @@ const handleCancel = () => {
   background: #8b7fe8;
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-field);
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-medium);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
@@ -428,9 +428,9 @@ const handleCancel = () => {
   background: #4caf7d;
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-button);
-  font-size: var(--fs-button);
-  font-weight: var(--fw-bold);
+  border-radius: 24px;
+  font-size: 22px;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -441,9 +441,9 @@ const handleCancel = () => {
   background: #ffffff;
   color: #3d3d4a;
   border: 2px solid #d1d1d8;
-  border-radius: var(--radius-button);
-  font-size: var(--fs-button);
-  font-weight: var(--fw-bold);
+  border-radius: 24px;
+  font-size: 22px;
+  font-weight: 700;
   cursor: pointer;
 }
 </style>

@@ -11,7 +11,11 @@
         <p class="card-count-label">총 기록 횟수</p>
         <p class="card-count">{{ incomeSummary.count }}건</p>
         <p class="card-date">
-          최근 일시&nbsp;{{ incomeSummary.latestDate ? formatDate(incomeSummary.latestDate) : '—' }}
+          최근 일시&nbsp;{{
+            incomeSummary.latestDate
+              ? formatDate(incomeSummary.latestDate)
+              : '—'
+          }}
         </p>
       </div>
 
@@ -20,7 +24,11 @@
         <p class="card-count-label">총 기록 횟수</p>
         <p class="card-count">{{ expenseSummary.count }}건</p>
         <p class="card-date">
-          최근 일시&nbsp;{{ expenseSummary.latestDate ? formatDate(expenseSummary.latestDate) : '—' }}
+          최근 일시&nbsp;{{
+            expenseSummary.latestDate
+              ? formatDate(expenseSummary.latestDate)
+              : '—'
+          }}
         </p>
       </div>
     </div>
@@ -30,7 +38,11 @@
       :show="showModal"
       :type="activeType"
       @submit="handleSubmit"
-      @cancel="() => { showModal = false; }"
+      @cancel="
+        () => {
+          showModal = false;
+        }
+      "
     />
   </div>
 </template>
@@ -110,24 +122,25 @@ const handleSubmit = async (formData) => {
 }
 
 .page-label {
-  font-size: var(--fs-desc);
-  font-weight: var(--fw-bold);
-  color: var(--color-text);
+  font-family: 'PyeongchangPeace', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
   margin: 0 0 12px;
   letter-spacing: 0.05em;
 }
 
 .page-title {
-  font-size: var(--fs-title);
-  font-weight: var(--fw-bold);
-  color: var(--color-text);
+  font-size: 36px;
+  font-weight: 500;
+  color: #ffffff;
   margin: 0 0 24px;
 }
 
 .page-divider {
   width: 100%;
   border: none;
-  border-top: 1px solid var(--color-sub);
+  border-top: 1px solid #3d3d4a;
   margin: 0 0 40px;
 }
 
@@ -140,7 +153,7 @@ const handleSubmit = async (formData) => {
 
 .summary-card {
   flex: 1;
-  border-radius: var(--radius-board);
+  border-radius: 16px;
   padding: 32px 28px;
   cursor: pointer;
   display: flex;
@@ -148,18 +161,22 @@ const handleSubmit = async (formData) => {
   gap: 8px;
 }
 
-.card-income  { background: var(--color-main); }
-.card-expense { background: var(--color-sub); }
+.card-income {
+  background: #4659ff;
+}
+.card-expense {
+  background: #3d3d4a;
+}
 
 .card-type {
-  font-size: var(--fs-body);
-  font-weight: var(--fw-bold);
-  color: var(--color-text);
+  font-size: 40px;
+  font-weight: 700;
+  color: #ffffff;
   margin: 0;
 }
 
 .card-count-label {
-  font-size: var(--fs-desc);
+  font-size: 16px;
   color: rgba(255, 255, 255, 0.75);
   margin: 0;
 }
@@ -167,17 +184,21 @@ const handleSubmit = async (formData) => {
 /* 숫자에 그라디언트 효과 적용 */
 .card-count {
   font-size: 60px;
-  font-weight: var(--fw-bold);
+  font-weight: 700;
   margin: 8px 0;
   line-height: 1;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.35) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .card-date {
-  font-size: var(--fs-desc);
+  font-size: 16px;
   color: rgba(255, 255, 255, 0.65);
   margin: 0;
 }
