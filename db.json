@@ -183,6 +183,6 @@
   ],
   "budget": {
     "id": "main",
-    "amount": 500000
+    "amount": 0
   }
 }

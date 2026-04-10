@@ -240,7 +240,7 @@ const RecommendedPercent = computed(() => {
 onMounted(async () => {
   await transactionStore.FetchTransactions();
   try {
-    const res = await axios.get('http://localhost:3000/budget/main');
+    const res = await axios.get('http://localhost:3000/budget');
     TotalBudget.value = res.data.amount || 0;
   } catch (error) {
     console.warn('예산 데이터가 없습니다.');
@@ -310,7 +310,7 @@ const SaveBudget = async () => {
   }
 
   try {
-    await axios.put('http://localhost:3000/budget/main', {
+    await axios.put('http://localhost:3000/budget', {
       id: 'main',
       amount: InputAmount.value,
     });
