@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { computed, reactive } from 'vue';
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -99,11 +99,10 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     const Today = new Date();
 
-    //전체목록일때
     if (State.SelectedPeriod === 'all') {
       return State.Transactions;
     }
-    //주간목록
+
     if (State.SelectedPeriod === 'week') {
       const Day = Today.getDay();
 
@@ -121,7 +120,6 @@ export const useTransactionStore = defineStore('transaction', () => {
       });
     }
 
-    //월별 목록
     if (State.SelectedPeriod === 'month') {
       const Start = new Date(Today.getFullYear(), Today.getMonth(), 1);
       const End = new Date(Today.getFullYear(), Today.getMonth() + 1, 0);
@@ -137,17 +135,22 @@ export const useTransactionStore = defineStore('transaction', () => {
     return State.Transactions;
   };
 
+  const FilterTransactionsByCategory = computed(() => {
+    let Result = FilterTransactionsByPeriod();
+
+    if (State.SelectedCategory !== 'all') {
+      Result = Result.filter((Item) => {
+        return Item.category === State.SelectedCategory;
+      });
+    }
+
+    return Result;
+  });
   // [2-4] 카테고리 조건에 맞는 거래 필터링
   // TODO: [2-4] 카테고리 필터 로직 구현
-  const FilterTransactionsByCategory = () => {
-    //전체 선택이면 전체 데이터 반환
-    if (State.SelectedCategory === 'all') {
-      return State.Transactions;
-    }
-    return State.Transactions.filter((item) => {
-      return item.category === State.SelectedCategory;
-    });
-  };
+  // const FilterTransactionsByCategory = () => {
+  //   //전체 선택이면 전체 데이터 반환
+  // };
 
   // [3-2] 월별 수입/지출/순이익 계산
   const CalculateMonthlySummary = () => {

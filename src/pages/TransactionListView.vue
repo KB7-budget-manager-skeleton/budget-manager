@@ -11,6 +11,9 @@
       <button class="btn btn-outline-success me-2" @click="setMonth">
         이번 달
       </button>
+      <button class="btn btn-outline-success me-2" @click="restFilter">
+        전체
+      </button>
 
       <hr />
     </div>
@@ -30,12 +33,13 @@
       </select>
     </div>
 
-    <!-- 들어가는 내용  -->
+    <!-- 거래내역조회  -->
     <table class="table table-striped table-hover text-center">
       <thead class="table-primary">
         <tr>
           <th>날짜</th>
           <th>카테고리</th>
+          <th>-</th>
           <th>금액</th>
           <th>메모</th>
           <th>작업</th>
@@ -43,11 +47,12 @@
       </thead>
 
       <tbody>
-        <tr v-for="item in transactions" :key="item.id">
-          <td>{{ item.date }}</td>
-          <td>{{ item.category }}</td>
-          <td>{{ item.amount }}원</td>
-          <td>{{ item.memo }}</td>
+        <tr v-for="content in transactions" :key="content.id">
+          <td>{{ content.date }}</td>
+          <td>{{ content.category }}</td>
+          <td>{{ content.item }}</td>
+          <td>{{ content.amount }}원</td>
+          <td>{{ content.memo }}</td>
 
           <!-- 작업(수정/ 삭제 ) 버튼 구현 -->
           <td>
@@ -67,7 +72,7 @@ const store = useTransactionStore();
 
 // store → 화면 연결
 
-const transactions = computed(() => store.FilterTransactionsByPeriod());
+const transactions = computed(() => store.FilterTransactionsByCategory);
 
 // 컴포넌트 실행 시 데이터 가져오기
 onMounted(() => {
@@ -81,6 +86,10 @@ const setWeek = () => {
 
 const setMonth = () => {
   store.SetSelectedPeriod('month');
+};
+
+const restFilter = () => {
+  store.SetSelectedPeriod('all');
 };
 
 //카테고리별 필터
