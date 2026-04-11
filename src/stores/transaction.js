@@ -1,33 +1,33 @@
-import { computed, reactive } from 'vue';
-import { defineStore } from 'pinia';
-import axios from 'axios';
+import { computed, reactive } from "vue";
+import { defineStore } from "pinia";
+import axios from "axios";
 
-export const useTransactionStore = defineStore('transaction', () => {
-  const BaseUri = '/api/transactions';
+export const useTransactionStore = defineStore("transaction", () => {
+  const BaseUri = "/api/transactions";
 
   // 공용 거래 데이터 상태 정의
   const State = reactive({
     Transactions: [],
-    SelectedPeriod: 'all',
-    SelectedCategory: 'all',
+    SelectedPeriod: "all",
+    SelectedCategory: "all",
     IsLoading: false,
     IsError: false,
-    ErrorMessage: '',
+    ErrorMessage: "",
   });
 
   // [2-1] 거래 목록 조회용 기본 API 함수
   const FetchTransactions = async () => {
     State.IsLoading = true;
     State.IsError = false;
-    State.ErrorMessage = '';
+    State.ErrorMessage = "";
     try {
       // TODO: [2-1] 거래 목록 조회 기능 구현
-      const res = await axios.get('http://localhost:3000/transactions');
+      const res = await axios.get("http://localhost:3000/transactions");
       //데이터 저장 꼭 필수
       State.Transactions = res.data;
     } catch (Error) {
       State.IsError = true;
-      State.ErrorMessage = '거래 내역을 불러오지 못했습니다.';
+      State.ErrorMessage = "거래 내역을 불러오지 못했습니다.";
       console.error(Error);
     } finally {
       State.IsLoading = false;
@@ -36,11 +36,18 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [1-4] 거래 등록용 기본 API 함수
   const CreateTransaction = async (TransactionData) => {
+    State.IsLoading = true;
     try {
-      // TODO: [1-4] 거래 등록 기능 구현
-      // axios.post(BaseUri, TransactionData) 사용
+      const Response = await axios.post(BaseUri, TransactionData);
+      State.Transactions.push(Response.data);
+      State.IsError = false;
+      State.ErrorMessage = "";
     } catch (Error) {
+      State.IsError = true;
+      State.ErrorMessage = Error.message;
       console.error(Error);
+    } finally {
+      State.IsLoading = false;
     }
   };
 
@@ -66,7 +73,7 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [2-5] 거래 삭제용 기본 API 함수
   const DeleteTransaction = async (id) => {
-    const confirmDelete = window.confirm('정말 삭제하시겠습니까??');
+    const confirmDelete = window.confirm("정말 삭제하시겠습니까??");
     if (!confirmDelete) return;
     try {
       // TODO: [2-5] 거래 삭제 기능 구현
@@ -75,7 +82,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         return item.id !== id;
       });
     } catch (Error) {
-      console.error('삭제실패:', Error);
+      console.error("삭제실패:", Error);
     }
   };
 
@@ -93,11 +100,11 @@ export const useTransactionStore = defineStore('transaction', () => {
   const FilterTransactionsByPeriod = () => {
     const Today = new Date();
 
-    if (State.SelectedPeriod === 'all') {
+    if (State.SelectedPeriod === "all") {
       return State.Transactions;
     }
 
-    if (State.SelectedPeriod === 'week') {
+    if (State.SelectedPeriod === "week") {
       const Day = Today.getDay();
       const Start = new Date(Today);
       Start.setHours(0, 0, 0, 0);
@@ -113,7 +120,7 @@ export const useTransactionStore = defineStore('transaction', () => {
       });
     }
 
-    if (State.SelectedPeriod === 'month') {
+    if (State.SelectedPeriod === "month") {
       const Start = new Date(Today.getFullYear(), Today.getMonth(), 1);
       Start.setHours(0, 0, 0, 0);
 
@@ -132,7 +139,7 @@ export const useTransactionStore = defineStore('transaction', () => {
   const FilterTransactionsByCategory = computed(() => {
     let Result = FilterTransactionsByPeriod();
 
-    if (State.SelectedCategory !== 'all') {
+    if (State.SelectedCategory !== "all") {
       Result = Result.filter((Item) => {
         return Item.category === State.SelectedCategory;
       });

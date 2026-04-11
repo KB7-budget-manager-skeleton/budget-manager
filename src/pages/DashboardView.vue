@@ -26,12 +26,11 @@
               <span :class="card.isIncrease ? 'text-red' : 'text-blue'">
                 {{ card.rate }}%
               </span>
-              {{ card.isIncrease ? '늘었어요.' : '줄었어요.' }}
+              {{ card.isIncrease ? "늘었어요." : "줄었어요." }}
             </span>
           </div>
         </div>
       </div>
-      <p style="color: white">{{ RecentTransactions.length }}</p>
       <div class="button-container">
         <button class="detail-btn" @click="GoToDetails">자세히 보기</button>
       </div>
@@ -63,10 +62,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-import { useTransactionStore } from '@/stores/transaction';
+import { useTransactionStore } from "@/stores/transaction";
 // Vue Router가 앱에 등록된 뒤에만 useRouter()를 사용합니다.
 const router = useRouter();
 const TransactionStore = useTransactionStore();
@@ -78,19 +77,19 @@ onMounted(() => {
 // 색상 처리를 위해 compareText 대신 rate와 isIncrease로 데이터를 변경했습니다.
 const SummaryCards = ref([
   {
-    title: '수입',
+    title: "수입",
     amount: 3500000,
     rate: 10,
     isIncrease: true,
   },
   {
-    title: '지출',
+    title: "지출",
     amount: 1250000,
     rate: 5,
     isIncrease: false,
   },
   {
-    title: '순이익',
+    title: "순이익",
     amount: 2250000, // 350만 - 125만
     rate: 15,
     isIncrease: true,
@@ -99,7 +98,7 @@ const SummaryCards = ref([
 
 // 자세히 보기를 눌렀을 때의 이동을 담당하는 함수
 const GoToDetails = () => {
-  router.push({ name: 'transactions' });
+  router.push({ name: "transactions" });
 };
 
 const RecentTransactions = computed(() => {
@@ -117,7 +116,7 @@ const RecentTransactions = computed(() => {
   min-height: 100vh; /* 화면 밑바닥까지 배경색 꽉 채우기 */
   padding: 60px 20px;
   box-sizing: border-box;
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
   margin: 0;
 }
 
