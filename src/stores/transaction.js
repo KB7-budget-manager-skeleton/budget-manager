@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { computed, reactive } from 'vue';
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -17,29 +17,30 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [2-1] 거래 목록 조회용 기본 API 함수
   const FetchTransactions = async () => {
+    State.IsLoading = true;
+    State.IsError = false;
+    State.ErrorMessage = '';
     try {
       // TODO: [2-1] 거래 목록 조회 기능 구현
       const res = await axios.get('http://localhost:3000/transactions');
+      //데이터 저장 꼭 필수
       State.Transactions = res.data;
     } catch (Error) {
+      State.IsError = true;
+      State.ErrorMessage = '거래 내역을 불러오지 못했습니다.';
       console.error(Error);
+    } finally {
+      State.IsLoading = false;
     }
   };
 
   // [1-4] 거래 등록용 기본 API 함수
   const CreateTransaction = async (TransactionData) => {
-    State.IsLoading = true;
     try {
-      const Response = await axios.post(BaseUri, TransactionData);
-      State.Transactions.push(Response.data);
-      State.IsError = false;
-      State.ErrorMessage = '';
+      // TODO: [1-4] 거래 등록 기능 구현
+      // axios.post(BaseUri, TransactionData) 사용
     } catch (Error) {
-      State.IsError = true;
-      State.ErrorMessage = Error.message;
       console.error(Error);
-    } finally {
-      State.IsLoading = false;
     }
   };
 
@@ -64,12 +65,17 @@ export const useTransactionStore = defineStore('transaction', () => {
   };
 
   // [2-5] 거래 삭제용 기본 API 함수
-  const DeleteTransaction = async (Id) => {
+  const DeleteTransaction = async (id) => {
+    const confirmDelete = window.confirm('정말 삭제하시겠습니까??');
+    if (!confirmDelete) return;
     try {
       // TODO: [2-5] 거래 삭제 기능 구현
-      // axios.delete(`${BaseUri}/${Id}`) 사용
+      await axios.delete(`http://localhost:3000/transactions/${id}`);
+      State.Transactions = State.Transactions.filter((item) => {
+        return item.id !== id;
+      });
     } catch (Error) {
-      console.error(Error);
+      console.error('삭제실패:', Error);
     }
   };
 
@@ -85,54 +91,60 @@ export const useTransactionStore = defineStore('transaction', () => {
 
   // [2-4] 기간 조건에 맞는 거래 필터링
   const FilterTransactionsByPeriod = () => {
-    const FormatDate = (DateValue) => {
-      return new Date(DateValue).toISOString().split('T')[0];
-    };
-
     const Today = new Date();
 
-    //전체목록일때
     if (State.SelectedPeriod === 'all') {
       return State.Transactions;
     }
-    //주간목록
+
     if (State.SelectedPeriod === 'week') {
       const Day = Today.getDay();
-
       const Start = new Date(Today);
+      Start.setHours(0, 0, 0, 0);
       Start.setDate(Today.getDate() - Day);
 
       const End = new Date(Start);
+      End.setHours(23, 59, 59, 999);
       End.setDate(Start.getDate() + 6);
 
-      const StartDate = FormatDate(Start);
-      const EndDate = FormatDate(End);
-
       return State.Transactions.filter((Item) => {
-        return Item.date >= StartDate && Item.date <= EndDate;
+        const ItemDate = new Date(Item.date);
+        return ItemDate >= Start && ItemDate <= End;
       });
     }
 
-    //월별 목록
     if (State.SelectedPeriod === 'month') {
       const Start = new Date(Today.getFullYear(), Today.getMonth(), 1);
-      const End = new Date(Today.getFullYear(), Today.getMonth() + 1, 0);
+      Start.setHours(0, 0, 0, 0);
 
-      const StartDate = FormatDate(Start);
-      const EndDate = FormatDate(End);
+      const End = new Date(Today.getFullYear(), Today.getMonth() + 1, 0);
+      End.setHours(23, 59, 59, 999);
 
       return State.Transactions.filter((Item) => {
-        return Item.date >= StartDate && Item.date <= EndDate;
+        const ItemDate = new Date(Item.date);
+        return ItemDate >= Start && ItemDate <= End;
       });
     }
 
     return State.Transactions;
   };
 
+  const FilterTransactionsByCategory = computed(() => {
+    let Result = FilterTransactionsByPeriod();
+
+    if (State.SelectedCategory !== 'all') {
+      Result = Result.filter((Item) => {
+        return Item.category === State.SelectedCategory;
+      });
+    }
+
+    return Result;
+  });
   // [2-4] 카테고리 조건에 맞는 거래 필터링
-  const FilterTransactionsByCategory = () => {
-    // TODO: [2-4] 카테고리 필터 로직 구현
-  };
+  // TODO: [2-4] 카테고리 필터 로직 구현
+  // const FilterTransactionsByCategory = () => {
+  //   //전체 선택이면 전체 데이터 반환
+  // };
 
   // [3-2] 월별 수입/지출/순이익 계산
   const CalculateMonthlySummary = () => {
