@@ -199,6 +199,16 @@
       "amount": 3000,
       "memo": "버스",
       "location": "시내버스"
+    },
+    {
+      "date": "2026-04-11",
+      "type": "expense",
+      "location": "편의점",
+      "category": "식비",
+      "item": "삼김",
+      "amount": 2000,
+      "memo": "참치마요삼각김밥",
+      "id": "9tMb0mS"
     }
   ]
 }

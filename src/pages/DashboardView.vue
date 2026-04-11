@@ -64,7 +64,6 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-
 import { useTransactionStore } from "@/stores/transaction";
 // Vue Router가 앱에 등록된 뒤에만 useRouter()를 사용합니다.
 const router = useRouter();
@@ -73,24 +72,30 @@ const TransactionStore = useTransactionStore();
 onMounted(() => {
   TransactionStore.FetchTransactions();
 });
+
+// 명세 [3-2] 계산 결과 가져오기 (computed로)
+const Summary = computed(() => {
+  return TransactionStore.CalculateMonthlySummary();
+});
+
 // 요구 명세의 3-2 데이터 계산이 완료되지 않아 dummy data 삽입
 // 색상 처리를 위해 compareText 대신 rate와 isIncrease로 데이터를 변경했습니다.
 const SummaryCards = ref([
   {
     title: "수입",
-    amount: 3500000,
+    amount: Summary.value.TotalIncome,
     rate: 10,
     isIncrease: true,
   },
   {
     title: "지출",
-    amount: 1250000,
+    amount: Summary.value.TotalExpense,
     rate: 5,
     isIncrease: false,
   },
   {
-    title: "순이익",
-    amount: 2250000, // 350만 - 125만
+    title: "잔액", // <- 순이익에서 수정(jmg)
+    amount: Summary.value.NetAmount,
     rate: 15,
     isIncrease: true,
   },
