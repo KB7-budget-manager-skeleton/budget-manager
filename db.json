@@ -199,6 +199,26 @@
       "amount": 3000,
       "memo": "버스",
       "location": "시내버스"
+    },
+    {
+      "date": "2026-04-08",
+      "type": "income",
+      "location": "ㅁㅁㅁ",
+      "category": "월급",
+      "item": "11",
+      "amount": 11111,
+      "memo": "aaa",
+      "id": "UPh_tOp"
+    },
+    {
+      "date": "2026-04-08",
+      "type": "income",
+      "location": "ㅁㅁㅁ",
+      "category": "월급",
+      "item": "2222",
+      "amount": 222,
+      "memo": "test",
+      "id": "d5ENBW4"
     }
   ]
 }
