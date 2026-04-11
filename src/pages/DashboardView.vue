@@ -26,43 +26,70 @@
               <span :class="card.isIncrease ? 'text-red' : 'text-blue'">
                 {{ card.rate }}%
               </span>
-              {{ card.isIncrease ? '늘었어요.' : '줄었어요.' }}
+              {{ card.isIncrease ? "늘었어요." : "줄었어요." }}
             </span>
           </div>
         </div>
       </div>
-
       <div class="button-container">
         <button class="detail-btn" @click="GoToDetails">자세히 보기</button>
+      </div>
+
+      <div class="recent-section">
+        <h3>최근 거래 내역</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>카테고리</th>
+              <th>금액</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in RecentTransactions" :key="item.id">
+              <td>{{ item.date }}</td>
+              <td>{{ item.category }}</td>
+              <td>{{ item.amount.toLocaleString() }}원</td>
+              <td>{{ item.memo }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-// 라우터
+import { useTransactionStore } from "@/stores/transaction";
+// Vue Router가 앱에 등록된 뒤에만 useRouter()를 사용합니다.
 const router = useRouter();
+const TransactionStore = useTransactionStore();
 
+onMounted(() => {
+  TransactionStore.FetchTransactions();
+});
 // 요구 명세의 3-2 데이터 계산이 완료되지 않아 dummy data 삽입
 // 색상 처리를 위해 compareText 대신 rate와 isIncrease로 데이터를 변경했습니다.
 const SummaryCards = ref([
   {
-    title: '수입',
+    title: "수입",
     amount: 3500000,
     rate: 10,
     isIncrease: true,
   },
   {
-    title: '지출',
+    title: "지출",
     amount: 1250000,
     rate: 5,
     isIncrease: false,
   },
   {
-    title: '순이익',
+    title: "순이익",
     amount: 2250000, // 350만 - 125만
     rate: 15,
     isIncrease: true,
@@ -71,8 +98,14 @@ const SummaryCards = ref([
 
 // 자세히 보기를 눌렀을 때의 이동을 담당하는 함수
 const GoToDetails = () => {
-  router.push('/transactions');
+  router.push({ name: "transactions" });
 };
+
+const RecentTransactions = computed(() => {
+  return TransactionStore.State.Transactions.slice()
+    .sort((a, b) => new Date(b.date) - new Date(a.date)) // 🔥 날짜 기준 최신순
+    .slice(0, 5); // 상위 5개
+});
 </script>
 
 <style scoped>
@@ -83,7 +116,7 @@ const GoToDetails = () => {
   min-height: 100vh; /* 화면 밑바닥까지 배경색 꽉 채우기 */
   padding: 60px 20px;
   box-sizing: border-box;
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
   margin: 0;
 }
 
@@ -201,5 +234,37 @@ hr.divider {
 
 .detail-btn:hover {
   background-color: #463ee6;
+}
+
+.recent-section {
+  margin-top: 40px;
+  background-color: #363640;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.recent-section h3 {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.recent-section table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #ffffff;
+}
+
+.recent-section th,
+.recent-section td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #4b4b55;
+}
+
+.recent-section th {
+  color: #d4d4d8;
+  font-weight: 700;
 }
 </style>
