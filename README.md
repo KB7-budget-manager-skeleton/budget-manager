@@ -141,7 +141,7 @@ Component → Store → API → DB → Store → Component
 - npm run dev  
 
 ### JSON Server 실행
-- npx json-server db.json  
+- npx json-server --watch db.json --port 3000
 
 ---
 
