@@ -1,25 +1,25 @@
-import { computed, reactive } from "vue";
-import { defineStore } from "pinia";
-import axios from "axios";
+import { computed, reactive } from 'vue';
+import { defineStore } from 'pinia';
+import axios from 'axios';
 
-export const useTransactionStore = defineStore("transaction", () => {
-  const BaseUri = "/api/transactions";
+export const useTransactionStore = defineStore('transaction', () => {
+  const BaseUri = '/api/transactions';
 
   // 공용 거래 데이터 상태 정의
   const State = reactive({
     Transactions: [],
-    SelectedPeriod: "all",
-    SelectedCategory: "all",
+    SelectedPeriod: 'all',
+    SelectedCategory: 'all',
     IsLoading: false,
     IsError: false,
-    ErrorMessage: "",
+    ErrorMessage: '',
   });
 
   // [2-1] 거래 목록 조회용 기본 API 함수
   const FetchTransactions = async () => {
     State.IsLoading = true;
     State.IsError = false;
-    State.ErrorMessage = "";
+    State.ErrorMessage = '';
     try {
       // TODO: [2-1] 거래 목록 조회 기능 구현
       const res = await axios.get(BaseUri);
@@ -27,7 +27,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       State.Transactions = res.data;
     } catch (Error) {
       State.IsError = true;
-      State.ErrorMessage = "거래 내역을 불러오지 못했습니다.";
+      State.ErrorMessage = '거래 내역을 불러오지 못했습니다.';
       console.error(Error);
     } finally {
       State.IsLoading = false;
@@ -41,7 +41,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       const Response = await axios.post(BaseUri, TransactionData);
       State.Transactions.push(Response.data);
       State.IsError = false;
-      State.ErrorMessage = "";
+      State.ErrorMessage = '';
     } catch (Error) {
       State.IsError = true;
       State.ErrorMessage = Error.message;
@@ -55,7 +55,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   const FetchTransactionById = async (Id) => {
     State.IsLoading = true;
     State.IsError = false;
-    State.ErrorMessage = "";
+    State.ErrorMessage = '';
 
     try {
       const CachedTransaction = State.Transactions.find(
@@ -70,7 +70,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       return Response.data;
     } catch (Error) {
       State.IsError = true;
-      State.ErrorMessage = "거래 내역을 불러오지 못했습니다.";
+      State.ErrorMessage = '거래 내역을 불러오지 못했습니다.';
       console.error(Error);
       return null;
     } finally {
@@ -82,7 +82,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   const UpdateTransaction = async (Id, TransactionData) => {
     State.IsLoading = true;
     State.IsError = false;
-    State.ErrorMessage = "";
+    State.ErrorMessage = '';
 
     try {
       const Response = await axios.put(`${BaseUri}/${Id}`, TransactionData);
@@ -96,7 +96,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       return Response.data;
     } catch (Error) {
       State.IsError = true;
-      State.ErrorMessage = "거래 내역 수정에 실패했습니다.";
+      State.ErrorMessage = '거래 내역 수정에 실패했습니다.';
       console.error(Error);
       return null;
     } finally {
@@ -106,7 +106,7 @@ export const useTransactionStore = defineStore("transaction", () => {
 
   // [2-5] 거래 삭제용 기본 API 함수
   const DeleteTransaction = async (id) => {
-    const confirmDelete = window.confirm("정말 삭제하시겠습니까??");
+    const confirmDelete = window.confirm('정말 삭제하시겠습니까??');
     if (!confirmDelete) return;
     try {
       // TODO: [2-5] 거래 삭제 기능 구현
@@ -115,7 +115,7 @@ export const useTransactionStore = defineStore("transaction", () => {
         return item.id !== id;
       });
     } catch (Error) {
-      console.error("삭제실패:", Error);
+      console.error('삭제실패:', Error);
     }
   };
 
@@ -133,11 +133,11 @@ export const useTransactionStore = defineStore("transaction", () => {
   const FilterTransactionsByPeriod = () => {
     const Today = new Date();
 
-    if (State.SelectedPeriod === "all") {
+    if (State.SelectedPeriod === 'all') {
       return State.Transactions;
     }
 
-    if (State.SelectedPeriod === "week") {
+    if (State.SelectedPeriod === 'week') {
       const Day = Today.getDay();
       const Start = new Date(Today);
       Start.setHours(0, 0, 0, 0);
@@ -153,7 +153,7 @@ export const useTransactionStore = defineStore("transaction", () => {
       });
     }
 
-    if (State.SelectedPeriod === "month") {
+    if (State.SelectedPeriod === 'month') {
       const Start = new Date(Today.getFullYear(), Today.getMonth(), 1);
       Start.setHours(0, 0, 0, 0);
 
@@ -172,7 +172,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   const FilterTransactionsByCategory = computed(() => {
     let Result = FilterTransactionsByPeriod();
 
-    if (State.SelectedCategory !== "all") {
+    if (State.SelectedCategory !== 'all') {
       Result = Result.filter((Item) => {
         return Item.category === State.SelectedCategory;
       });
@@ -203,19 +203,70 @@ export const useTransactionStore = defineStore("transaction", () => {
     });
 
     const TotalIncome = CurrentMonthTransactions.filter(
-      (Item) => Item.type === "income",
+      (Item) => Item.type === 'income',
     ).reduce((Sum, Item) => Sum + Number(Item.amount), 0);
 
     const TotalExpense = CurrentMonthTransactions.filter(
-      (Item) => Item.type === "expense",
+      (Item) => Item.type === 'expense',
     ).reduce((Sum, Item) => Sum + Number(Item.amount), 0);
 
     const NetAmount = TotalIncome - TotalExpense;
+
+    // CSH - 증감률 로직 구현
+
+    let LastYear = CurrentYear;
+    let LastMonth = CurrentMonth - 1;
+
+    if (LastMonth < 0) {
+      LastYear -= 1;
+      LastMonth = 11;
+    }
+
+    const LastMonthTransactions = State.Transactions.filter((Item) => {
+      const ItemDate = new Date(Item.date);
+      return (
+        ItemDate.getFullYear() === LastYear && ItemDate.getMonth() === LastMonth
+      );
+    });
+
+    const LastTotalIncome = LastMonthTransactions.filter(
+      (Item) => Item.type === 'income',
+    ).reduce((Sum, Item) => Sum + Number(Item.amount), 0);
+
+    const LastTotalExpense = LastMonthTransactions.filter(
+      (Item) => Item.type === 'expense',
+    ).reduce((Sum, Item) => Sum + Number(Item.amount), 0);
+
+    const LastNetAmount = LastTotalIncome - LastTotalExpense;
+
+    // 증감률(rate)과 늘었는지(isIncrease) 판단하는 함수
+    const CalculateCompare = (Current, Last) => {
+      // 지난달 내역이 아예 없는 경우
+
+      if (Last === 0) {
+        return {
+          isIncrease: Current >= 0,
+          rate: Current === 0 ? 0 : 100, // 아예 0원이면 0%, 수입/지출이 생겼으면 100% 증가로 표시
+        };
+      }
+
+      const Diff = Current - Last;
+      const Rate = Math.round((Math.abs(Diff) / Math.abs(Last)) * 100);
+
+      return {
+        isIncrease: Diff >= 0, // 차액이 0보다 크거나 같으면 '늘었어요'
+        rate: Rate,
+      };
+    };
 
     return {
       TotalIncome,
       TotalExpense,
       NetAmount,
+
+      IncomeCompare: CalculateCompare(TotalIncome, LastTotalIncome),
+      ExpenseCompare: CalculateCompare(TotalExpense, LastTotalExpense),
+      NetCompare: CalculateCompare(NetAmount, LastNetAmount),
     };
   };
 
