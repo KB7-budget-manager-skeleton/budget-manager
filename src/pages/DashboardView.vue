@@ -80,30 +80,26 @@ const Summary = computed(() => {
 });
 
 // summaryCards를 ref로 선언해서 처음 한 번만 값 넣고 끝남 -> computed 사용해서 값 변동되도록
-// CSH - SummaryCards를 지난달과 이번달 데이터를 비교해 증감률을 계산할 수 있도록 수정
-const SummaryCards = computed(() => {
-  if (!Summary.value || !Summary.value.IncomeCompare) return [];
-  return [
-    {
-      title: '수입',
-      amount: Summary.value.TotalIncome,
-      rate: Summary.value.IncomeCompare.rate,
-      isIncrease: Summary.value.IncomeCompare.isIncrease,
-    },
-    {
-      title: '지출',
-      amount: Summary.value.TotalExpense,
-      rate: Summary.value.ExpenseCompare.rate,
-      isIncrease: Summary.value.ExpenseCompare.isIncrease,
-    },
-    {
-      title: '잔액',
-      amount: Summary.value.NetAmount,
-      rate: Summary.value.NetCompare.rate,
-      isIncrease: Summary.value.NetCompare.isIncrease,
-    },
-  ];
-});
+const SummaryCards = computed(() => [
+  {
+    title: "수입",
+    amount: Summary.value.TotalIncome,
+    rate: 10,
+    isIncrease: true,
+  },
+  {
+    title: "지출",
+    amount: Summary.value.TotalExpense,
+    rate: 5,
+    isIncrease: false,
+  },
+  {
+    title: "순수익",
+    amount: Summary.value.NetAmount,
+    rate: 15,
+    isIncrease: true,
+  },
+]);
 
 // 자세히 보기를 눌렀을 때의 이동을 담당하는 함수
 const GoToDetails = () => {
