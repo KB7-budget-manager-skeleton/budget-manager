@@ -241,16 +241,6 @@
       "location": "안산 중앙역"
     },
     {
-      "id": "25",
-      "date": "2026-04-01",
-      "type": "income",
-      "category": "월급",
-      "item": "4월 급여",
-      "amount": 2900000,
-      "memo": "4월 월급 입금",
-      "location": "회사"
-    },
-    {
       "id": "26",
       "date": "2026-04-03",
       "type": "expense",

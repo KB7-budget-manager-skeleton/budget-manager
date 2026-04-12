@@ -1,8 +1,6 @@
 <template>
   <div class="dashboard-wrapper">
     <div class="dashboard-content">
-      <h2>대시보드</h2>
-
       <div class="header-section">
         <h4 class="sub-title">dashboard</h4>
 
@@ -26,7 +24,7 @@
               <span :class="card.isIncrease ? 'text-red' : 'text-blue'">
                 {{ card.rate }}%
               </span>
-              {{ card.isIncrease ? "늘었어요." : "줄었어요." }}
+              {{ card.isIncrease ? '늘었어요.' : '줄었어요.' }}
             </span>
           </div>
         </div>
@@ -62,9 +60,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useTransactionStore } from "@/stores/transaction";
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useTransactionStore } from '@/stores/transaction';
 // Vue Router가 앱에 등록된 뒤에만 useRouter()를 사용합니다.
 const router = useRouter();
 const TransactionStore = useTransactionStore();
@@ -81,7 +79,6 @@ const Summary = computed(() => {
   return TransactionStore.CalculateMonthlySummary();
 });
 
-// 색상 처리를 위해 compareText 대신 rate와 isIncrease로 데이터를 변경했습니다.
 // summaryCards를 ref로 선언해서 처음 한 번만 값 넣고 끝남 -> computed 사용해서 값 변동되도록
 const SummaryCards = computed(() => [
   {
@@ -108,7 +105,7 @@ const SummaryCards = computed(() => [
 const GoToDetails = () => {
   // jmg 수정: name 방식은 router 설정에 설정이 필요해서 계속 개발자 도구에서 경고 에러가 떠서 아래와 같이 수정 -완-
   // router.push({ name: "transactions" });
-  router.push("/transactions");
+  router.push('/transactions');
 };
 
 const RecentTransactions = computed(() => {
@@ -121,12 +118,12 @@ const RecentTransactions = computed(() => {
 <style scoped>
 /* ------------------- 레이아웃 및 배경 ------------------- */
 .dashboard-wrapper {
-  background-color: #1e1e20; /* 피그마 배경색 */
+  background-color: #1e1e20;
   width: 100%;
-  min-height: 100vh; /* 화면 밑바닥까지 배경색 꽉 채우기 */
+  min-height: 100vh;
   padding: 60px 20px;
   box-sizing: border-box;
-  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
   margin: 0;
 }
 
@@ -203,13 +200,13 @@ hr.divider {
   font-weight: 700;
   color: #ffffff;
   margin: 0 0 16px 0;
-  text-align: center; /* ✅ 가운데 정렬로 수정됨 */
+  text-align: center;
 }
 
 .card-compare {
   font-size: 14px;
   color: #a1a1aa;
-  text-align: center; /* ✅ 가운데 정렬로 수정됨 */
+  text-align: center;
   display: block;
 }
 
