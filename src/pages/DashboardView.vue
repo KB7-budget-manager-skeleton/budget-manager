@@ -69,8 +69,11 @@ import { useTransactionStore } from "@/stores/transaction";
 const router = useRouter();
 const TransactionStore = useTransactionStore();
 
-onMounted(() => {
-  TransactionStore.FetchTransactions();
+// 비동기가 아니라 그냥 처리했을 때 페이지 랜딩 시 계산한 값들이 로드되지 않는 문제 발견 -> 연결됐을 떄 비동기로 FetchTransactions함수 불러오도록 변경
+onMounted(async () => {
+  if (TransactionStore.State.Transactions.length === 0) {
+    await TransactionStore.FetchTransactions();
+  }
 });
 
 // 명세 [3-2] 계산 결과 가져오기 (computed로)
@@ -78,9 +81,9 @@ const Summary = computed(() => {
   return TransactionStore.CalculateMonthlySummary();
 });
 
-// 요구 명세의 3-2 데이터 계산이 완료되지 않아 dummy data 삽입
 // 색상 처리를 위해 compareText 대신 rate와 isIncrease로 데이터를 변경했습니다.
-const SummaryCards = ref([
+// summaryCards를 ref로 선언해서 처음 한 번만 값 넣고 끝남 -> computed 사용해서 값 변동되도록
+const SummaryCards = computed(() => [
   {
     title: "수입",
     amount: Summary.value.TotalIncome,
