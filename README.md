@@ -9,7 +9,7 @@
 
 | 이름 | 역할 | 담당 기능 |
 |------|------|----------|
-| 정민규 (PM) | 구조 설계 / 데이터 관리 | 전체 구조, Pinia 설계 |
+| 정민규 | 구조 설계 / 데이터 관리 | 전체 구조, Pinia 설계 |
 | 김민건 | 기능 개발 | 수입/지출 등록 |
 | 황하연 | 기능 개발 | 거래 내역 조회 |
 | 조수현 | 기능 개발 | 월별 요약 |
@@ -141,7 +141,7 @@ Component → Store → API → DB → Store → Component
 - npm run dev  
 
 ### JSON Server 실행
-- npx json-server db.json  
+- npx json-server --watch db.json --port 3000
 
 ---
 
