@@ -103,7 +103,9 @@ const SummaryCards = ref([
 
 // 자세히 보기를 눌렀을 때의 이동을 담당하는 함수
 const GoToDetails = () => {
-  router.push({ name: "transactions" });
+  // jmg 수정: name 방식은 router 설정에 설정이 필요해서 계속 개발자 도구에서 경고 에러가 떠서 아래와 같이 수정 -완-
+  // router.push({ name: "transactions" });
+  router.push("/transactions");
 };
 
 const RecentTransactions = computed(() => {
