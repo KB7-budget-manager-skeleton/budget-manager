@@ -12,56 +12,93 @@
       </div>
 
       <div class="cards-container">
-        <div v-for="(card, index) in SummaryCards" :key="index" class="summary-card">
+        <div
+          v-for="(card, index) in SummaryCards"
+          :key="index"
+          class="summary-card"
+        >
           <h3 class="card-title">{{ card.title }}</h3>
           <div class="card-bottom">
             <p class="card-amount">{{ card.amount.toLocaleString() }}원</p>
-            
+
             <span class="card-compare">
-              지난달보다 
+              지난달보다
               <span :class="card.isIncrease ? 'text-red' : 'text-blue'">
                 {{ card.rate }}%
               </span>
-              {{ card.isIncrease ? '늘었어요.' : '줄었어요.' }}
+              {{ card.isIncrease ? "늘었어요." : "줄었어요." }}
             </span>
-            
           </div>
         </div>
       </div>
-
       <div class="button-container">
         <button class="detail-btn" @click="GoToDetails">자세히 보기</button>
       </div>
 
+      <div class="recent-section">
+        <h3>최근 거래 내역</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>카테고리</th>
+              <th>금액</th>
+              <th>메모</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in RecentTransactions" :key="item.id">
+              <td>{{ item.date }}</td>
+              <td>{{ item.category }}</td>
+              <td>{{ item.amount.toLocaleString() }}원</td>
+              <td>{{ item.memo }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-// 라우터 
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useTransactionStore } from "@/stores/transaction";
+// Vue Router가 앱에 등록된 뒤에만 useRouter()를 사용합니다.
 const router = useRouter();
+const TransactionStore = useTransactionStore();
 
-// 요구 명세의 3-2 데이터 계산이 완료되지 않아 dummy data 삽입
+// 비동기가 아니라 그냥 처리했을 때 페이지 랜딩 시 계산한 값들이 로드되지 않는 문제 발견 -> 연결됐을 떄 비동기로 FetchTransactions함수 불러오도록 변경
+onMounted(async () => {
+  if (TransactionStore.State.Transactions.length === 0) {
+    await TransactionStore.FetchTransactions();
+  }
+});
+
+// 명세 [3-2] 계산 결과 가져오기 (computed로)
+const Summary = computed(() => {
+  return TransactionStore.CalculateMonthlySummary();
+});
+
 // 색상 처리를 위해 compareText 대신 rate와 isIncrease로 데이터를 변경했습니다.
-const SummaryCards = ref([
+// summaryCards를 ref로 선언해서 처음 한 번만 값 넣고 끝남 -> computed 사용해서 값 변동되도록
+const SummaryCards = computed(() => [
   {
-    title: '수입',
-    amount: 3500000,
+    title: "수입",
+    amount: Summary.value.TotalIncome,
     rate: 10,
     isIncrease: true,
   },
   {
-    title: '지출',
-    amount: 1250000,
+    title: "지출",
+    amount: Summary.value.TotalExpense,
     rate: 5,
     isIncrease: false,
   },
   {
-    title: '순이익',
-    amount: 2250000, // 350만 - 125만
+    title: "잔액", // <- 순이익에서 수정(jmg)
+    amount: Summary.value.NetAmount,
     rate: 15,
     isIncrease: true,
   },
@@ -69,8 +106,16 @@ const SummaryCards = ref([
 
 // 자세히 보기를 눌렀을 때의 이동을 담당하는 함수
 const GoToDetails = () => {
-  router.push('/transactions');
+  // jmg 수정: name 방식은 router 설정에 설정이 필요해서 계속 개발자 도구에서 경고 에러가 떠서 아래와 같이 수정 -완-
+  // router.push({ name: "transactions" });
+  router.push("/transactions");
 };
+
+const RecentTransactions = computed(() => {
+  return TransactionStore.State.Transactions.slice()
+    .sort((a, b) => new Date(b.date) - new Date(a.date)) // 🔥 날짜 기준 최신순
+    .slice(0, 5); // 상위 5개
+});
 </script>
 
 <style scoped>
@@ -81,7 +126,7 @@ const GoToDetails = () => {
   min-height: 100vh; /* 화면 밑바닥까지 배경색 꽉 채우기 */
   padding: 60px 20px;
   box-sizing: border-box;
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
   margin: 0;
 }
 
@@ -116,7 +161,7 @@ const GoToDetails = () => {
 }
 
 hr.divider {
-  width: 320px; 
+  width: 320px;
   height: 1px;
   background-color: #3f3f46;
   border: none;
@@ -126,19 +171,19 @@ hr.divider {
 /* ------------------- 요약 카드 영역 ------------------- */
 .cards-container {
   display: flex;
-  gap: 20px; 
-  margin-bottom: 16px; 
+  gap: 20px;
+  margin-bottom: 16px;
 }
 
 .summary-card {
-  flex: 1; 
-  background-color: #363640; 
-  padding: 32px 24px; 
-  border-radius: 16px; 
+  flex: 1;
+  background-color: #363640;
+  padding: 32px 24px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
-  min-height: 140px; 
+  justify-content: space-between;
+  min-height: 140px;
 }
 
 .card-title {
@@ -146,24 +191,24 @@ hr.divider {
   font-weight: 700;
   color: #ffffff;
   margin: 0;
-  text-align: left; 
+  text-align: left;
 }
 
 .card-bottom {
-  margin-top: auto; 
+  margin-top: auto;
 }
 
 .card-amount {
-  font-size: 32px; 
+  font-size: 32px;
   font-weight: 700;
   color: #ffffff;
-  margin: 0 0 16px 0; 
+  margin: 0 0 16px 0;
   text-align: center; /* ✅ 가운데 정렬로 수정됨 */
 }
 
 .card-compare {
   font-size: 14px;
-  color: #a1a1aa; 
+  color: #a1a1aa;
   text-align: center; /* ✅ 가운데 정렬로 수정됨 */
   display: block;
 }
@@ -185,12 +230,12 @@ hr.divider {
 }
 
 .detail-btn {
-  width: 100%; 
-  background-color: #5b54fa; 
+  width: 100%;
+  background-color: #5b54fa;
   color: #ffffff;
   border: none;
-  border-radius: 12px; 
-  padding: 18px 0; 
+  border-radius: 12px;
+  padding: 18px 0;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -198,6 +243,38 @@ hr.divider {
 }
 
 .detail-btn:hover {
-  background-color: #463ee6; 
+  background-color: #463ee6;
+}
+
+.recent-section {
+  margin-top: 40px;
+  background-color: #363640;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.recent-section h3 {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.recent-section table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #ffffff;
+}
+
+.recent-section th,
+.recent-section td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #4b4b55;
+}
+
+.recent-section th {
+  color: #d4d4d8;
+  font-weight: 700;
 }
 </style>
