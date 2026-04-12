@@ -302,13 +302,13 @@
     },
     {
       "id": "31",
-      "date": "2026-04-12",
       "type": "income",
+      "date": "2026-04-12",
+      "location": "본가",
       "category": "용돈",
       "item": "가족 용돈",
       "amount": 50000,
-      "memo": "주말 용돈",
-      "location": "본가"
+      "memo": "주말 용돈"
     }
   ]
 }

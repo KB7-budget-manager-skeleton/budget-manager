@@ -17,7 +17,7 @@
       @click="menuOpen = !menuOpen"
       aria-label="메뉴 열기"
     >
-      {{ menuOpen ? '✕' : '☰' }}
+      {{ menuOpen ? "✕" : "☰" }}
     </button>
 
     <!-- 모바일 드롭다운 -->
@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 const menuOpen = ref(false);
 </script>
 
@@ -49,14 +49,16 @@ const menuOpen = ref(false);
   background-color: #1a1a1b;
   border-bottom: 1px solid #3d3d4a;
   padding: 0 40px;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 /* 로고 */
 .Logo {
   text-decoration: none;
   color: #ffffff;
-  font-family: 'PyeongchangPeace', sans-serif;
+  font-family: "PyeongchangPeace", sans-serif;
   font-weight: 700;
   font-size: 28px;
 }
@@ -107,7 +109,7 @@ const menuOpen = ref(false);
   background-color: #3d3d4a;
   padding: 16px 24px;
   gap: 16px;
-  z-index: 100;
+  z-index: 1001;
 }
 
 .MobileNav a,

@@ -52,7 +52,13 @@
               <td>{{ content.memo }}</td>
 
               <td>
-                <button class="action-btn edit-btn">수정</button>
+                <!-- [2-5] 수정 팝업으로 이동하도록 버튼에 클릭 이벤트 (삭제 쪽하고 맞춤) -->
+                <button
+                  class="action-btn edit-btn"
+                  @click="openEditModal(content)"
+                >
+                  수정
+                </button>
                 <button
                   class="action-btn delete-btn"
                   @click="deleteItem(content.id)"
@@ -63,15 +69,24 @@
             </tr>
           </tbody>
         </table>
+        <!-- 수정 모달 수정 - 위치 맞으니까 옮기지 말아주세요 -->
+        <EditTransactionView
+          :Show="isEditModalOpen"
+          :Transaction="selectedTransaction"
+          @cancel="closeEditModal"
+          @submit="handleEditSubmit"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
-import { useTransactionStore } from '@/stores/transaction';
+import { ref, computed, onMounted } from "vue";
+import { useTransactionStore } from "@/stores/transaction";
+import EditTransactionView from "@/pages/EditTransactionView.vue";
 
+// code-convention 지키는 습관을 기릅시다! - 수정 x
 const store = useTransactionStore();
 const transactions = computed(() => store.FilterTransactionsByCategory);
 
@@ -82,19 +97,51 @@ onMounted(() => {
 
 // 기간별 필터
 const setWeek = () => {
-  store.SetSelectedPeriod('week');
+  store.SetSelectedPeriod("week");
 };
 
 const setMonth = () => {
-  store.SetSelectedPeriod('month');
+  store.SetSelectedPeriod("month");
 };
 
 const resetFilter = () => {
-  store.SetSelectedPeriod('all');
+  store.SetSelectedPeriod("all");
 };
 
 const deleteItem = (id) => {
   store.DeleteTransaction(id);
+};
+
+// --------------------------------------------------
+// [2-5] 수정 관련 팝업(모달) 상태 정의부 - jmg
+
+/* 수정 모달용 상태 추가 */
+const isEditModalOpen = ref(false);
+const selectedTransaction = ref(null);
+
+/* 수정 버튼 클릭 */
+const openEditModal = async (transaction) => {
+  const response = await store.FetchTransactionById(transaction.id);
+
+  if (!response) return;
+
+  selectedTransaction.value = { ...response };
+  isEditModalOpen.value = true;
+};
+
+/* 수정 모달 닫기 */
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+  selectedTransaction.value = null;
+};
+
+/* 수정 완료 */
+const handleEditSubmit = async (payload) => {
+  const response = await store.UpdateTransaction(payload.id, payload);
+
+  if (!response) return;
+
+  closeEditModal();
 };
 </script>
 

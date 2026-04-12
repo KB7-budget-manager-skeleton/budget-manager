@@ -51,23 +51,56 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
 
-  // [4-1] 기존 거래 조회용 기본 API 함수
+  // [4-1] 기존 거래 조회용 기본 API 함수 - jmg꺼임 건들 ㄴㄴ
   const FetchTransactionById = async (Id) => {
+    State.IsLoading = true;
+    State.IsError = false;
+    State.ErrorMessage = "";
+
     try {
-      // TODO: [4-1] 기존 거래 단건 조회 기능 구현
-      // axios.get(`${BaseUri}/${Id}`) 사용
+      const CachedTransaction = State.Transactions.find(
+        (Item) => Item.id === Id,
+      );
+
+      if (CachedTransaction) {
+        return CachedTransaction;
+      }
+
+      const Response = await axios.get(`${BaseUri}/${Id}`);
+      return Response.data;
     } catch (Error) {
+      State.IsError = true;
+      State.ErrorMessage = "거래 내역을 불러오지 못했습니다.";
       console.error(Error);
+      return null;
+    } finally {
+      State.IsLoading = false;
     }
   };
 
-  // [4-2] 기존 거래 수정용 기본 API 함수
+  // [4-2] 기존 거래 수정용 기본 API 함수 - jmg꺼임 건들 ㄴㄴ
   const UpdateTransaction = async (Id, TransactionData) => {
+    State.IsLoading = true;
+    State.IsError = false;
+    State.ErrorMessage = "";
+
     try {
-      // TODO: [4-2] 기존 거래 수정 기능 구현
-      // axios.put(`${BaseUri}/${Id}`, TransactionData) 사용
+      const Response = await axios.put(`${BaseUri}/${Id}`, TransactionData);
+
+      const Index = State.Transactions.findIndex((Item) => Item.id === Id);
+
+      if (Index !== -1) {
+        State.Transactions[Index] = Response.data;
+      }
+
+      return Response.data;
     } catch (Error) {
+      State.IsError = true;
+      State.ErrorMessage = "거래 내역 수정에 실패했습니다.";
       console.error(Error);
+      return null;
+    } finally {
+      State.IsLoading = false;
     }
   };
 
