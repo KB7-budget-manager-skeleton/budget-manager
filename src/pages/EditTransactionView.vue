@@ -20,7 +20,6 @@
         <div class="FormRow">
           <label class="FormLabel">날짜</label>
           <input v-model="FormData.date" type="date" class="InputBox" />
-          <p class="PlaceholderText">기존값: {{ Transaction?.date }}</p>
         </div>
 
         <div class="FormRow">
@@ -45,7 +44,6 @@
             <option value="용돈">용돈</option>
             <option value="이자">이자</option>
           </select>
-          <p class="PlaceholderText">기존값: {{ Transaction?.category }}</p>
         </div>
 
         <div class="FormRow">
@@ -117,16 +115,19 @@ const FormData = reactive({
   memo: "",
 });
 
+// fix: [2-5] 입력됐던 값들 초기화보다는 값을 input에 넣어놓고 사용자가 직접 수정하도록 수정
 watch(
   () => Props.Transaction,
-  () => {
-    FormData.type = "";
-    FormData.date = "";
-    FormData.location = "";
-    FormData.category = "";
-    FormData.item = "";
-    FormData.amount = null;
-    FormData.memo = "";
+  (NewTransaction) => {
+    if (!NewTransaction) return;
+
+    FormData.type = NewTransaction.type || "";
+    FormData.date = NewTransaction.date || "";
+    FormData.location = NewTransaction.location || "";
+    FormData.category = NewTransaction.category || "";
+    FormData.item = NewTransaction.item || "";
+    FormData.amount = NewTransaction.amount ?? null;
+    FormData.memo = NewTransaction.memo || "";
   },
   { immediate: true },
 );
@@ -135,21 +136,20 @@ const CloseModal = () => {
   Emit("cancel");
 };
 
+// 기존값을 input 부분에 그대로 담아두니까
+// 복잡한 (빈값이면 다시 기존값을 불러와서 대체해 db에 저장하는)로직이 필요 x
 const SubmitEdit = () => {
   if (!Props.Transaction) return;
 
   const Payload = {
     id: Props.Transaction.id,
-    type: FormData.type || Props.Transaction.type,
-    date: FormData.date || Props.Transaction.date,
-    location: FormData.location || Props.Transaction.location,
-    category: FormData.category || Props.Transaction.category,
-    item: FormData.item || Props.Transaction.item,
-    amount:
-      FormData.amount === null || FormData.amount === ""
-        ? Props.Transaction.amount
-        : Number(FormData.amount),
-    memo: FormData.memo || Props.Transaction.memo,
+    type: FormData.type,
+    date: FormData.date,
+    location: FormData.location,
+    category: FormData.category,
+    item: FormData.item,
+    amount: Number(FormData.amount),
+    memo: FormData.memo,
   };
 
   Emit("submit", Payload);
