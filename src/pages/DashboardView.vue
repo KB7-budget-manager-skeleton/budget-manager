@@ -97,7 +97,7 @@ const SummaryCards = computed(() => [
     isIncrease: false,
   },
   {
-    title: "잔액", // <- 순이익에서 수정(jmg)
+    title: "순수익",
     amount: Summary.value.NetAmount,
     rate: 15,
     isIncrease: true,
