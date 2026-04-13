@@ -299,6 +299,16 @@
       "item": "가족 용돈",
       "amount": 3000,
       "memo": "주말 용돈"
+    },
+    {
+      "date": "2026-04-12",
+      "type": "income",
+      "location": "집",
+      "category": "용돈",
+      "item": "용돈",
+      "amount": 100000,
+      "memo": "",
+      "id": "46Gd4QS"
     }
   ]
 }
