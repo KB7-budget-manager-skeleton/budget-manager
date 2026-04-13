@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import { reactive, watch } from "vue";
+import { reactive, watch } from 'vue';
 
 const Props = defineProps({
   Show: {
@@ -103,16 +103,16 @@ const Props = defineProps({
   },
 });
 
-const Emit = defineEmits(["cancel", "submit"]);
+const Emit = defineEmits(['cancel', 'submit']);
 
 const FormData = reactive({
-  type: "",
-  date: "",
-  location: "",
-  category: "",
-  item: "",
+  type: '',
+  date: '',
+  location: '',
+  category: '',
+  item: '',
   amount: null,
-  memo: "",
+  memo: '',
 });
 
 // fix: [2-5] 입력됐던 값들 초기화보다는 값을 input에 넣어놓고 사용자가 직접 수정하도록 수정
@@ -121,19 +121,19 @@ watch(
   (NewTransaction) => {
     if (!NewTransaction) return;
 
-    FormData.type = NewTransaction.type || "";
-    FormData.date = NewTransaction.date || "";
-    FormData.location = NewTransaction.location || "";
-    FormData.category = NewTransaction.category || "";
-    FormData.item = NewTransaction.item || "";
+    FormData.type = NewTransaction.type || '';
+    FormData.date = NewTransaction.date || '';
+    FormData.location = NewTransaction.location || '';
+    FormData.category = NewTransaction.category || '';
+    FormData.item = NewTransaction.item || '';
     FormData.amount = NewTransaction.amount ?? null;
-    FormData.memo = NewTransaction.memo || "";
+    FormData.memo = NewTransaction.memo || '';
   },
   { immediate: true },
 );
 
 const CloseModal = () => {
-  Emit("cancel");
+  Emit('cancel');
 };
 
 // 기존값을 input 부분에 그대로 담아두니까
@@ -152,7 +152,7 @@ const SubmitEdit = () => {
     memo: FormData.memo,
   };
 
-  Emit("submit", Payload);
+  Emit('submit', Payload);
 };
 </script>
 
@@ -164,66 +164,76 @@ const SubmitEdit = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 8px 12px;
   z-index: 999;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .ModalPanel {
   width: 100%;
-  max-width: 560px;
+  max-width: 440px;
+  max-height: calc(100vh - 16px);
   background: #f3f3f5;
-  border-radius: 20px;
-  padding: 28px 32px 30px;
+  border-radius: 14px;
+  padding: 14px 16px 16px;
   position: relative;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+  box-sizing: border-box;
+  margin: 0 auto;
+  margin-top: 20px;
 }
 
 .CloseButton {
   position: absolute;
-  top: 16px;
-  right: 20px;
+  top: 8px;
+  right: 12px;
   border: none;
   background: transparent;
-  font-size: 32px;
+  font-size: 22px;
   cursor: pointer;
   color: #444;
+  line-height: 1;
 }
 
 .ModalLabel {
   text-align: center;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 700;
   color: #202020;
-  margin: 0 0 8px;
+  margin: 0 0 2px;
 }
 
 .ModalTitle {
   text-align: center;
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 800;
   color: #202020;
-  margin: 0 0 16px;
+  margin: 0 0 10px;
+  line-height: 1.2;
 }
 
 .ModalDivider {
   border: none;
   border-top: 1px solid #d7d7dc;
-  margin-bottom: 22px;
+  margin-bottom: 10px;
 }
 
 .EditForm {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
 }
 
 .FormRow {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .FormLabel {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: #444;
 }
@@ -231,10 +241,10 @@ const SubmitEdit = () => {
 .InputBox {
   width: 100%;
   border: none;
-  border-radius: 14px;
+  border-radius: 10px;
   background: #ffffff;
-  padding: 14px 16px;
-  font-size: 15px;
+  padding: 9px 11px;
+  font-size: 13px;
   color: #222;
   outline: none;
   box-sizing: border-box;
@@ -246,28 +256,22 @@ const SubmitEdit = () => {
 }
 
 .TextareaBox {
-  min-height: 100px;
+  min-height: 56px;
   resize: none;
-}
-
-.PlaceholderText {
-  margin: 0;
-  font-size: 13px;
-  color: #a6a6af;
 }
 
 .ButtonRow {
   display: flex;
-  gap: 14px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .SaveButton,
 .CancelButton {
   flex: 1;
-  height: 58px;
-  border-radius: 18px;
-  font-size: 18px;
+  height: 40px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -282,5 +286,48 @@ const SubmitEdit = () => {
   background: #fff;
   color: #444;
   border: 1px solid #cfcfd6;
+}
+
+@media (max-width: 768px) {
+  .ModalOverlay {
+    padding: 6px;
+  }
+
+  .ModalPanel {
+    max-width: 100%;
+    max-height: calc(100vh - 12px);
+    padding: 12px 12px 14px;
+    border-radius: 12px;
+  }
+
+  .ModalTitle {
+    font-size: 18px;
+  }
+
+  .FormLabel {
+    font-size: 12px;
+  }
+
+  .InputBox {
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: 9px;
+  }
+
+  .TextareaBox {
+    min-height: 52px;
+  }
+
+  .ButtonRow {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .SaveButton,
+  .CancelButton {
+    height: 38px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
 }
 </style>
