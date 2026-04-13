@@ -82,22 +82,22 @@ const Summary = computed(() => {
 // summaryCards를 ref로 선언해서 처음 한 번만 값 넣고 끝남 -> computed 사용해서 값 변동되도록
 const SummaryCards = computed(() => [
   {
-    title: "수입",
+    title: '수입',
     amount: Summary.value.TotalIncome,
-    rate: 10,
-    isIncrease: true,
+    rate: Summary.value.IncomeCompare.rate,
+    isIncrease: Summary.value.IncomeCompare.isIncrease,
   },
   {
-    title: "지출",
+    title: '지출',
     amount: Summary.value.TotalExpense,
-    rate: 5,
-    isIncrease: false,
+    rate: Summary.value.ExpenseCompare.rate,
+    isIncrease: Summary.value.ExpenseCompare.isIncrease,
   },
   {
-    title: "순수익",
+    title: '순수익',
     amount: Summary.value.NetAmount,
-    rate: 15,
-    isIncrease: true,
+    rate: Summary.value.NetCompare.rate,
+    isIncrease: Summary.value.NetCompare.isIncrease,
   },
 ]);
 
